@@ -1,0 +1,2088 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)file:///Users/jo/Downloads/aufmacher-effekte-v11_4.html -->
+<html lang="de"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aufmacher-Effekte v21 · ohne Overlays</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0ede8;--surface:#faf9f7;--border:#d8d4cc;--text:#1a1917;--muted:#7a7670;--accent:#c8410a;--panel:#edebe6;--radius:5px}
+body{font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+header{border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0}
+#header-top{display:flex;align-items:stretch;gap:0}
+#header-title{font-family:'Syne',sans-serif;font-weight:700;font-size:1.15rem;line-height:1.15;padding:0.6rem 1.2rem;border-right:1px solid var(--border);display:flex;align-items:center;white-space:nowrap;min-width:max-content}
+#header-links-col{display:flex;flex-direction:column;flex:1;overflow:hidden}
+#header-row1,#header-row2{display:flex;align-items:center;gap:4px;padding:0.35rem 1rem;flex-wrap:wrap}
+#header-row1{border-bottom:1px solid var(--border)}
+.row-label{font-size:0.62rem;color:var(--muted);white-space:nowrap;margin-right:2px}
+.src-tab{font-family:'DM Mono',monospace;font-size:0.63rem;padding:2px 8px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--muted);transition:all 0.1s}
+.src-tab:hover,.src-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.hlink-add{font-family:'DM Mono',monospace;font-size:0.63rem;padding:2px 8px;border:1px solid var(--border);border-radius:var(--radius);background:none;color:var(--muted);cursor:pointer}
+.hlink-add:hover{border-color:var(--accent);color:var(--accent)}
+.hlink{font-size:0.65rem;color:var(--accent);text-decoration:none;padding:1px 6px;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);white-space:nowrap;transition:all 0.1s}
+.hlink:hover{border-color:var(--accent);background:#fdf3ee}
+header span{font-size:0.68rem;color:var(--muted)}
+.app{display:grid;grid-template-columns:270px 1fr;overflow:hidden;flex:1;min-height:0}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.sidebar-section{padding:0.9rem 1rem;border-bottom:1px solid var(--border)}
+.section-label{font-size:0.6rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem}
+
+/* Drop zone */
+.drop-zone{border:1.5px dashed var(--border);border-radius:var(--radius);padding:0.9rem;text-align:center;cursor:pointer;font-size:0.68rem;color:var(--muted);line-height:1.7;transition:all 0.15s}
+.drop-zone:hover,.drop-zone.drag-over{border-color:var(--accent);background:#fdf3ee;color:var(--accent)}
+.drop-zone input{display:none}
+
+/* Link panel */
+.link-list{display:flex;flex-direction:column;gap:3px;margin-bottom:6px}
+.link-item{display:flex;align-items:center;gap:3px}
+.link-item a{flex:1;font-size:0.65rem;padding:0.28rem 0.5rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);color:var(--accent);text-decoration:none;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;transition:all 0.1s}
+.link-item a:hover{border-color:var(--accent);background:#fdf3ee}
+.link-item .del-link{font-size:0.6rem;padding:0.25rem 0.4rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:none;color:var(--muted);flex-shrink:0}
+.link-item .del-link:hover{color:#c00;border-color:#c00}
+.link-edit-area{display:none;flex-direction:column;gap:4px;margin-top:4px}
+.link-edit-area.open{display:flex}
+.link-edit-area input{font-family:'DM Mono',monospace;font-size:0.68rem;padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);width:100%}
+.link-edit-area input:focus{outline:none;border-color:var(--accent)}
+.link-edit-row{display:flex;gap:3px}
+.link-edit-row button{font-family:'DM Mono',monospace;font-size:0.65rem;padding:0.28rem 0.6rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--text);white-space:nowrap}
+.link-edit-row button:hover{border-color:var(--accent);color:var(--accent)}
+.link-toggle{font-family:'DM Mono',monospace;font-size:0.65rem;padding:0.28rem 0.5rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--muted);width:100%;text-align:left;transition:all 0.1s}
+.link-toggle:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Effect tabs */
+.effect-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}
+.tab-btn{padding:0.35rem 0.1rem;font-family:'DM Mono',monospace;font-size:0.62rem;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;color:var(--muted);transition:all 0.1s;text-align:center}
+.tab-btn:hover{border-color:var(--accent);color:var(--text)}
+.tab-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+.controls{display:flex;flex-direction:column;gap:0.7rem}
+.control-row{display:flex;flex-direction:column;gap:0.25rem}
+.control-row label{font-size:0.67rem;color:var(--muted);display:flex;justify-content:space-between}
+.control-row label span{color:var(--text);font-weight:500}
+input[type=range]{width:100%;height:3px;accent-color:var(--accent);cursor:pointer}
+.color-pair{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.color-swatch{display:flex;flex-direction:column;gap:2px;font-size:0.62rem;color:var(--muted)}
+.color-swatch input[type=color]{width:100%;height:26px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:2px;background:var(--surface)}
+select{width:100%;font-family:'DM Mono',monospace;font-size:0.7rem;padding:0.3rem 0.5rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text);cursor:pointer}
+.preset-row{display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+.preset-btn{font-family:'DM Mono',monospace;font-size:0.58rem;padding:0.28rem 0.1rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--muted);text-align:center;transition:all 0.1s}
+.preset-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Custom presets */
+.custom-presets{display:flex;flex-direction:column;gap:4px}
+.custom-preset-item{display:flex;align-items:center;gap:3px}
+.custom-preset-item button{flex:1;font-family:'DM Mono',monospace;font-size:0.62rem;padding:0.28rem 0.4rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--text);text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.custom-preset-item button:hover{border-color:var(--accent)}
+.del-preset{font-size:0.6rem;padding:0.25rem 0.4rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:none;color:var(--muted)}
+.del-preset:hover{color:#c00;border-color:#c00}
+.save-preset-row{display:flex;gap:3px;margin-top:4px}
+.save-preset-row input{flex:1;font-family:'DM Mono',monospace;font-size:0.68rem;padding:0.28rem 0.4rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text)}
+.save-preset-row input:focus{outline:none;border-color:var(--accent)}
+.save-preset-row button{font-family:'DM Mono',monospace;font-size:0.68rem;padding:0.28rem 0.6rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--text);white-space:nowrap}
+.save-preset-row button:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Border controls */
+.effect-panel.active{display:flex;flex-direction:column;gap:0.7rem}
+
+/* Actions */
+.actions{padding:0.9rem 1rem;margin-top:auto;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:5px;background:var(--surface)}
+.btn{font-family:'DM Mono',monospace;font-size:0.7rem;padding:0.5rem 1rem;border-radius:var(--radius);cursor:pointer;transition:all 0.1s;border:1px solid var(--border);background:var(--panel);color:var(--text);width:100%;text-align:center}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{opacity:0.88}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+
+/* Border controls */
+.border-row{display:grid;grid-template-columns:1fr 1fr;gap:6px;align-items:end}
+.effect-panel{display:none}
+/* Canvas area */
+.canvas-area{display:flex;align-items:center;justify-content:center;background:#e0ddd7;background-image:repeating-conic-gradient(#d0cdc7 0% 25%,transparent 0% 50%);background-size:16px 16px;position:relative;overflow:hidden;user-select:none}
+.canvas-wrap{position:relative;display:inline-block}
+canvas{display:block;max-width:90vw;max-height:85vh;box-shadow:0 4px 32px rgba(0,0,0,0.2)}
+.placeholder{text-align:center;color:var(--muted);font-size:0.78rem;line-height:2.2;padding:2rem}
+.placeholder strong{display:block;font-family:'Syne',sans-serif;font-size:1.1rem;color:var(--text);margin-bottom:0.3rem}
+.processing{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);font-size:0.68rem;color:var(--muted);background:var(--surface);padding:4px 14px;border-radius:20px;border:1px solid var(--border);display:none;pointer-events:none}
+.source-tabs-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px}
+.src-tab{font-family:'DM Mono',monospace;font-size:0.65rem;padding:0.3rem 0.2rem;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;background:var(--panel);color:var(--muted);text-align:center;transition:all 0.1s}
+.src-tab:hover,.src-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.meta-unknown{color:#c8410a;font-weight:500}
+/* Crop overlay */
+.crop-shade{position:absolute;background:rgba(0,0,0,0.5);pointer-events:none}
+#cropRect{position:absolute;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,0.5);pointer-events:none}
+.crop-bar{display:none} /* moved to sidebar actions */
+/* Slicer overlay */
+#slicerOverlay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;display:none}
+.sl-handle{position:absolute;background:rgba(255,255,255,0.85);border:2px solid var(--accent);z-index:5;pointer-events:all;transition:background 0.1s}
+.sl-handle:hover,.sl-handle.dragging{background:var(--accent)}
+.sl-handle-h{left:0;right:0;height:10px;margin-top:-5px;cursor:ns-resize}
+.sl-handle-v{top:0;bottom:0;width:10px;margin-left:-5px;cursor:ew-resize}
+.sl-line{position:absolute;background:rgba(200,65,10,0.6);pointer-events:none}
+.sl-line-h{left:0;right:0;height:2px}
+.sl-line-v{top:0;bottom:0;width:2px}
+/* Responsive: unter 800px Controls über das Bild stapeln */
+@media (max-width:800px){
+  body{height:auto;min-height:100vh;overflow-x:hidden;overflow-y:auto}
+  .app{grid-template-columns:1fr;flex:none;overflow:visible;min-height:0}
+  .sidebar{border-right:none;border-bottom:2px solid var(--border);overflow:visible}
+  .sidebar-section{border-bottom:1px solid var(--border)}
+  .canvas-area{min-height:60vh;overflow:visible}
+  canvas{max-width:96vw;max-height:70vh}
+  .actions{margin-top:0}
+}
+/* Overlay (Rubrik) + Pop-Out-Pinsel + Unschärfe-Hintergrund */
+.ov-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:8px}
+.ov-tile{position:relative;font-family:'DM Mono',monospace;font-size:0.58rem;color:#cfd6e6;background:#2a3550;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;padding:0;overflow:hidden;aspect-ratio:16/9;display:flex;align-items:flex-end;justify-content:center}
+.ov-tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:3px}
+.ov-tile span{position:relative;z-index:1;background:rgba(10,15,30,0.6);width:100%;text-align:center;padding:1px 0}
+.ov-tile[data-ov="__none__"]{background:var(--panel);color:var(--muted);align-items:center}
+.ov-tile:hover{border-color:var(--accent)}
+.ov-tile.active{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset}
+.ov-brush{display:flex;flex-direction:column;gap:0.55rem;margin-top:2px}
+.ov-brush.disabled{opacity:0.45;pointer-events:none}
+.ov-toggle.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:3px}
+.seg-btn{font-family:'DM Mono',monospace;font-size:0.62rem;padding:0.3rem 0.1rem;border:1px solid var(--border);border-radius:var(--radius);background:var(--panel);color:var(--muted);cursor:pointer;text-align:center;transition:all 0.1s}
+.seg-btn:hover{border-color:var(--accent);color:var(--text)}
+.seg-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+/* Sidebar-Reihenfolge: Bild → Format → Effekt → Feineinstellung → Overlay/Rahmen → Export */
+#bild-section{order:1}
+#format-section{order:2}
+#effect-section{order:3}
+#effect-controls{order:4}
+#meta-section{order:5}
+#deco-section{order:6}
+.actions{order:7}
+.fmt-panel{display:flex;flex-direction:column;gap:0.6rem;margin-top:6px}
+.fmt-hint{font-size:0.63rem;color:var(--muted);line-height:1.45;margin:0}
+#header-actions{margin-left:auto;display:flex;align-items:center;padding:0 1rem}
+/* Pop-Out-Pinsel: Kreisvorschau */
+#brushPreview{position:absolute;border:2px solid var(--accent);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);display:none;z-index:10;box-shadow:0 0 0 1px rgba(255,255,255,0.6)}
+/* Interaktive Tour (Spotlight) */
+#tourBackdrop{position:fixed;inset:0;z-index:2000;background:transparent}
+#tourSpot{position:fixed;z-index:2001;border-radius:8px;border:2px solid var(--accent);box-shadow:0 0 0 9999px rgba(15,18,24,0.68);pointer-events:none;transition:left .25s ease,top .25s ease,width .25s ease,height .25s ease}
+#tourSpot.no-target{left:50%;top:50%;width:0;height:0;border-color:transparent}
+#tourCard{position:fixed;z-index:2002;width:min(320px,86vw);background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,.35);padding:1rem 1.1rem;font-family:'DM Mono',monospace;transition:left .2s ease,top .2s ease}
+#tourCard h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:0.45rem;color:var(--text)}
+#tourCard p{font-size:0.75rem;line-height:1.6;color:var(--text);margin:0 0 0.85rem}
+#tourCard .tour-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+#tourCard .tour-dots{display:flex;gap:5px;flex-wrap:wrap;max-width:120px}
+#tourCard .tour-dot{width:6px;height:6px;border-radius:50%;background:var(--border)}
+#tourCard .tour-dot.on{background:var(--accent)}
+#tourCard .tour-btns{display:flex;gap:6px}
+#tourCard button{font-family:'DM Mono',monospace;font-size:0.7rem;padding:0.35rem 0.7rem;border-radius:var(--radius);border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer}
+#tourCard button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+#tourCard button:disabled{opacity:0.4;cursor:default}
+.tour-head{display:flex;justify-content:flex-end;margin:-2px -2px 2px}
+#tourSkip{font-size:0.62rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:2px}
+</style>
+</head>
+<body>
+<header>
+  <div id="header-top">
+    <div id="header-title">Aufmacher-<br>Effekte</div>
+    <div id="header-actions">
+      <button id="helpBtn" class="hlink-add" title="Kurze Einführung / Tour">? Tour</button>
+    </div>
+  </div>
+</header>
+<div class="app">
+<div class="sidebar">
+
+  <!-- BILD -->
+  <div class="sidebar-section" id="bild-section">
+    <div class="section-label">Bild</div>
+    <div class="drop-zone" id="dropZone">
+      <input type="file" id="fileInput" accept="image/*">
+      Datei hierher ziehen oder klicken
+    </div>
+    <button class="btn" id="restoreBtn" style="margin-top:6px" disabled>Original wiederherstellen</button>
+  </div>
+
+  <!-- EFFECTS -->
+  <div class="sidebar-section" id="effect-section">
+    <div class="section-label">Effekt</div>
+    <div class="effect-tabs" id="fx-tabs" style="grid-template-columns:repeat(4,1fr)">
+      <button class="tab-btn active" data-effect="none">Ohne</button>
+      <button class="tab-btn" data-effect="duotone">Duotone</button>
+      <button class="tab-btn" data-effect="halftone">Halftone</button>
+      <button class="tab-btn" data-effect="dither">Dither</button>
+      <button class="tab-btn" data-effect="glitch">Glitch</button>
+      <button class="tab-btn" data-effect="ascii">ASCII</button>
+      <button class="tab-btn" data-effect="risograph">Riso</button>
+      <button class="tab-btn" data-effect="posterize">Poster</button>
+      <button class="tab-btn" data-effect="solarize">Solar</button>
+      <button class="tab-btn" data-effect="pixelate">Pixel</button>
+      <button class="tab-btn" data-effect="threshold">Threshold</button>
+      <button class="tab-btn" data-effect="blueprint">Blueprint</button>
+      <button class="tab-btn" data-effect="gradmap">Verlauf</button>
+      <button class="tab-btn" data-effect="flash">Blitz</button>
+      <button class="tab-btn" data-effect="neon">Neon</button>
+      <button class="tab-btn" data-effect="micro">Technik</button>
+      <button class="tab-btn" data-effect="lowpoly">Low-Poly</button>
+    </div>
+  </div>
+
+  <!-- EFFECT PANELS -->
+  <div class="sidebar-section" id="effect-controls">
+
+    <div class="effect-panel controls" id="panel-duotone">
+      <div class="section-label">Farben</div>
+      <div class="color-pair">
+        <div class="color-swatch">Schatten<input type="color" id="dt-shadow" value="#1a2e6e"></div>
+        <div class="color-swatch">Licht<input type="color" id="dt-highlight" value="#f5a623"></div>
+      </div>
+      <div class="preset-row">
+        <button class="preset-btn" data-shadow="#1a2e6e" data-highlight="#f5a623">Blau/Gold</button>
+        <button class="preset-btn" data-shadow="#2d1b4e" data-highlight="#ff6b6b">Lila/Rot</button>
+        <button class="preset-btn" data-shadow="#0d3d2b" data-highlight="#c8f04a">Grün/Lime</button>
+        <button class="preset-btn" data-shadow="#1a1a1a" data-highlight="#f0e6d0">S/W Creme</button>
+        <button class="preset-btn" data-shadow="#5c1a1a" data-highlight="#ffd166">Dunkel/Gelb</button>
+        <button class="preset-btn" data-shadow="#003049" data-highlight="#fcbf49">Nacht/Sand</button>
+      </div>
+      <div class="control-row"><label>Kontrast <span id="dt-contrast-val">50</span></label><input type="range" id="dt-contrast" min="0" max="100" value="50" step="1"></div>
+    </div>
+
+    <div class="effect-panel controls" id="panel-dither">
+      <select id="dith-algo"><option value="floyd">Floyd-Steinberg</option><option value="atkinson">Atkinson</option><option value="bayer">Bayer</option><option value="threshold">Schwellenwert</option></select>
+      <select id="dith-palette"><option value="bw">Schwarzweiß</option><option value="gameboy">Game Boy</option><option value="cga">CGA</option><option value="sepia">Sepia</option><option value="color4">4-Bit Farbe</option></select>
+      <div class="control-row"><label>Skalierung <span id="dith-scale-val">1</span>×</label><input type="range" id="dith-scale" min="1" max="8" value="1" step="1"></div>
+    </div>
+
+    <div class="effect-panel controls" id="panel-glitch">
+      <div class="control-row"><label>Intensität <span id="gl-intensity-val">40</span></label><input type="range" id="gl-intensity" min="5" max="100" value="40" step="1"></div>
+      <div class="control-row"><label>RGB-Shift <span id="gl-rgb-val">8</span></label><input type="range" id="gl-rgb" min="0" max="40" value="8" step="1"></div>
+      <div class="control-row"><label>Scan-Linien <span id="gl-scan-val">30</span>%</label><input type="range" id="gl-scan" min="0" max="100" value="30" step="1"></div>
+      <select id="gl-type"><option value="horizontal">Horizontal-Slices</option><option value="noise">Pixel-Noise</option><option value="both">Kombiniert</option></select>
+      <button class="btn" id="gl-reseed">↻ Neue Variante</button>
+    </div>
+
+    <div class="effect-panel controls" id="panel-ascii">
+      <select id="asc-mode"><option value="block">Block-Zeichen (█▓▒░)</option><option value="classic">Klassisch (@#S%?*+;:,.)</option><option value="minimal">Minimal (█ · )</option></select>
+      <div class="control-row"><label>Zeichengröße <span id="asc-size-val">8</span>px</label><input type="range" id="asc-size" min="4" max="24" value="8" step="2"></div>
+      <div class="control-row" id="asc-weight-row" style="display: none;"><label>Strichstärke <span id="asc-weight-val">400</span></label><input type="range" id="asc-weight" min="100" max="900" value="400" step="100"></div>
+      <div class="color-pair">
+        <div class="color-swatch">Zeichen<input type="color" id="asc-fg" value="#1a1917"></div>
+        <div class="color-swatch">Hintergrund<input type="color" id="asc-bg" value="#f5f3ef"></div>
+      </div>
+      <div class="control-row"><label>Originalfarbe <span id="asc-color-val">0</span>%</label><input type="range" id="asc-color" min="0" max="100" value="0" step="1"></div>
+    </div>
+
+    <div class="effect-panel controls" id="panel-risograph">
+      <div class="color-pair">
+        <div class="color-swatch">Farbe 1<input type="color" id="riso-c1" value="#e8305a"></div>
+        <div class="color-swatch">Farbe 2<input type="color" id="riso-c2" value="#005aff"></div>
+      </div>
+      <div class="preset-row">
+        <button class="preset-btn riso-pre" data-c1="#e8305a" data-c2="#005aff">Rot/Blau</button>
+        <button class="preset-btn riso-pre" data-c1="#ff6600" data-c2="#660099">Orange/Lila</button>
+        <button class="preset-btn riso-pre" data-c1="#00a896" data-c2="#ff4e50">Teal/Coral</button>
+        <button class="preset-btn riso-pre" data-c1="#f7b731" data-c2="#e55039">Gelb/Rot</button>
+        <button class="preset-btn riso-pre" data-c1="#26de81" data-c2="#fd79a8">Mint/Pink</button>
+        <button class="preset-btn riso-pre" data-c1="#2d3436" data-c2="#e17055">Dunkel/Terra</button>
+      </div>
+      <div class="control-row"><label>Versatz <span id="riso-offset-val">4</span>px</label><input type="range" id="riso-offset" min="0" max="20" value="4" step="1"></div>
+      <div class="control-row"><label>Körnung <span id="riso-grain-val">30</span></label><input type="range" id="riso-grain" min="0" max="100" value="30" step="1"></div>
+    </div>
+
+    <div class="effect-panel controls" id="panel-posterize">
+      <div class="control-row"><label>Stufen <span id="pos-levels-val">4</span></label><input type="range" id="pos-levels" min="2" max="16" value="4" step="1"></div>
+      <select id="pos-mode"><option value="rgb">RGB</option><option value="hsl">HSL</option><option value="lum">Graustufen</option></select>
+    </div>
+
+    <div class="effect-panel controls" id="panel-solarize">
+      <div class="control-row"><label>Schwellenwert <span id="sol-thresh-val">128</span></label><input type="range" id="sol-thresh" min="0" max="255" value="128" step="1"></div>
+      <select id="sol-mode"><option value="classic">Klassisch</option><option value="partial">Teilinversion</option><option value="hue">Farbton-Inversion</option></select>
+      <div class="control-row"><label>Intensität <span id="sol-strength-val">100</span>%</label><input type="range" id="sol-strength" min="0" max="100" value="100" step="1"></div>
+    </div>
+
+    <div class="effect-panel controls active" id="panel-pixelate">
+      <div class="control-row"><label>Blockgröße <span id="pix-size-val">12</span>px</label><input type="range" id="pix-size" min="2" max="80" value="12" step="1"></div>
+      <select id="pix-mode"><option value="square">Quadratisch</option><option value="circle">Rund</option><option value="diamond">Raute</option></select>
+    </div>
+
+    <!-- HALFTONE -->
+    <div class="effect-panel controls" id="panel-halftone">
+      <div class="control-row"><label>Punktgröße <span id="ht-size-val">6</span></label><input type="range" id="ht-size" min="2" max="20" value="6" step="1"></div>
+      <div class="control-row"><label>Überlappung <span id="ht-overlap-val">0</span>%</label><input type="range" id="ht-overlap" min="0" max="80" value="0" step="1"></div>
+      <select id="ht-mode"><option value="circle">Kreis</option><option value="square">Quadrat</option><option value="cross">Kreuz</option></select>
+      <select id="ht-color"><option value="bw">Schwarzweiß</option><option value="color">Farbe</option><option value="sepia">Sepia</option></select>
+      <div class="color-pair">
+        <div class="color-swatch">Hintergrund<input type="color" id="ht-bg" value="#ffffff"></div>
+        <div class="color-swatch">Punkte<input type="color" id="ht-fg" value="#000000"></div>
+      </div>
+    </div>
+
+    <!-- THRESHOLD / SILHOUETTE -->
+    <div class="effect-panel controls" id="panel-threshold">
+      <div class="control-row"><label>Schwellenwert <span id="thr-level-val">128</span></label><input type="range" id="thr-level" min="0" max="255" value="128" step="1"></div>
+      <div class="color-pair">
+        <div class="color-swatch">Dunkel<input type="color" id="thr-dark" value="#000000"></div>
+        <div class="color-swatch">Hell<input type="color" id="thr-light" value="#f0e040"></div>
+      </div>
+      <select id="thr-mode">
+        <option value="hard">Hart (Silhouette)</option>
+        <option value="smooth">Weich (Anti-Alias)</option>
+        <option value="duotone">Duotone-Mix</option>
+      </select>
+      <div class="control-row"><label>Kontrast vor <span id="thr-contrast-val">0</span></label><input type="range" id="thr-contrast" min="-50" max="50" value="0" step="1"></div>
+    </div>
+
+    <!-- BLUEPRINT -->
+    <div class="effect-panel controls" id="panel-blueprint">
+      <div class="color-pair">
+        <div class="color-swatch">Hintergrund<input type="color" id="bp-bg" value="#0a2a6b"></div>
+        <div class="color-swatch">Linien<input type="color" id="bp-line" value="#dfe7f5"></div>
+      </div>
+      <div class="preset-row">
+        <button class="preset-btn bp-pre" data-bg="#0a2a6b" data-line="#dfe7f5">Blaupause</button>
+        <button class="preset-btn bp-pre" data-bg="#0c0c0c" data-line="#00e5ff">Cyan/Schwarz</button>
+        <button class="preset-btn bp-pre" data-bg="#f4f1e8" data-line="#1a1a1a">Zeichnung</button>
+      </div>
+      <div class="control-row"><label>Kantenstärke <span id="bp-strength-val">40</span></label><input type="range" id="bp-strength" min="1" max="100" value="40" step="1"></div>
+    </div>
+
+    <!-- GRADIENT MAP -->
+    <div class="effect-panel controls" id="panel-gradmap">
+      <div class="section-label">Farbverlauf: Schatten → Mitte → Licht</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
+        <div class="color-swatch">Schatten<input type="color" id="gm-low" value="#1a0b3e"></div>
+        <div class="color-swatch">Mitte<input type="color" id="gm-mid" value="#c8410a"></div>
+        <div class="color-swatch">Licht<input type="color" id="gm-high" value="#ffd9a0"></div>
+      </div>
+      <div class="preset-row">
+        <button class="preset-btn gm-pre" data-c0="#1a0b3e" data-c1="#c8410a" data-c2="#ffd9a0">Sonnenglut</button>
+        <button class="preset-btn gm-pre" data-c0="#0d1b4c" data-c1="#7b2ff7" data-c2="#f5c6ff">Neon</button>
+        <button class="preset-btn gm-pre" data-c0="#08313a" data-c1="#1b998b" data-c2="#f2f6d0">Teal/Creme</button>
+        <button class="preset-btn gm-pre" data-c0="#2b0a3d" data-c1="#e84393" data-c2="#ffeaa7">Beere/Gelb</button>
+        <button class="preset-btn gm-pre" data-c0="#1e2a3a" data-c1="#e17055" data-c2="#ffeede">Pastell</button>
+        <button class="preset-btn gm-pre" data-c0="#000000" data-c1="#8a8a8a" data-c2="#ffffff">Graustufen</button>
+      </div>
+      <div class="control-row"><label>Kontrast <span id="gm-contrast-val">50</span></label><input type="range" id="gm-contrast" min="0" max="100" value="50" step="1"></div>
+    </div>
+
+    <!-- BLITZLICHT / FLASH -->
+    <div class="effect-panel controls" id="panel-flash">
+      <div class="control-row"><label>Blitz / Belichtung <span id="fl-exposure-val">55</span></label><input type="range" id="fl-exposure" min="0" max="100" value="55" step="1"></div>
+      <div class="control-row"><label>Vignette <span id="fl-vignette-val">50</span></label><input type="range" id="fl-vignette" min="0" max="100" value="50" step="1"></div>
+      <div class="control-row"><label>Korn <span id="fl-grain-val">30</span></label><input type="range" id="fl-grain" min="0" max="100" value="30" step="1"></div>
+      <select id="fl-stamp"><option value="1">Datumsstempel: an</option><option value="0">Datumsstempel: aus</option></select>
+    </div>
+
+    <!-- NEON-NOIR -->
+    <div class="effect-panel controls" id="panel-neon">
+      <div class="control-row"><label>Glow <span id="nn-glow-val">60</span></label><input type="range" id="nn-glow" min="0" max="100" value="60" step="1"></div>
+      <div class="control-row"><label>Dunkelheit <span id="nn-dark-val">55</span></label><input type="range" id="nn-dark" min="0" max="100" value="55" step="1"></div>
+      <div class="control-row"><label>Korn <span id="nn-grain-val">20</span></label><input type="range" id="nn-grain" min="0" max="100" value="20" step="1"></div>
+      <div class="color-swatch">Schatten-Tönung<input type="color" id="nn-tint" value="#12043a"></div>
+    </div>
+
+    <!-- MICRO-INDUSTRIAL -->
+    <div class="effect-panel controls" id="panel-micro">
+      <select id="mi-elements">
+        <option value="full">Voll: Raster + Marken + Barcode</option>
+        <option value="marks">Nur Marken + Barcode</option>
+        <option value="grid">Nur Raster</option>
+      </select>
+      <select id="mi-tone">
+        <option value="color">Bild farbig</option>
+        <option value="gray">Bild entsättigt</option>
+      </select>
+      <div class="control-row"><label>Raster-Dichte <span id="mi-grid-val">12</span></label><input type="range" id="mi-grid" min="0" max="40" value="12" step="1"></div>
+      <div class="color-swatch">Markierungen<input type="color" id="mi-color" value="#14110d"></div>
+    </div>
+
+    <!-- LOW-POLY / TRIANGULATION -->
+    <div class="effect-panel controls" id="panel-lowpoly">
+      <div class="control-row"><label>Kantenlänge <span id="lp-cell-val">44</span>px</label><input type="range" id="lp-cell" min="12" max="140" value="44" step="1"></div>
+      <div class="control-row"><label>Unregelmäßigkeit <span id="lp-jitter-val">55</span></label><input type="range" id="lp-jitter" min="0" max="100" value="55" step="1"></div>
+      <select id="lp-outline"><option value="0">Ohne Kantenlinien</option><option value="1">Mit Kantenlinien</option></select>
+    </div>
+
+    <!-- CUSTOM PRESETS -->
+    <div style="margin-top:0.8rem;border-top:1px solid var(--border);padding-top:0.8rem">
+      <div class="section-label">Eigene Presets</div>
+      <div class="custom-presets" id="customPresetList"></div>
+      <div class="save-preset-row">
+        <input type="text" id="presetName" placeholder="Name …" maxlength="24">
+        <button id="savePresetBtn">Speichern</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16:9-FORMAT: Zuschnitt ODER Unschärfe-Rand -->
+  <div class="sidebar-section controls" id="format-section">
+    <div class="section-label">16:9-Format</div>
+    <div class="seg" id="format-mode">
+      <button type="button" class="seg-btn active" data-fmt="none">Aus</button>
+      <button type="button" class="seg-btn" data-fmt="crop">Zuschnitt</button>
+      <button type="button" class="seg-btn" data-fmt="blur">Unschärfe-Rand</button>
+    </div>
+    <div id="fmt-crop" class="fmt-panel" hidden>
+      <div id="crop-controls-normal">
+        <button class="btn" id="cropBtn">✂ 16:9-Ausschnitt aufziehen</button>
+      </div>
+      <div id="crop-controls-active" style="display:none;flex-direction:column;gap:5px">
+        <div style="font-size:0.65rem;color:var(--muted);text-align:center">Rahmen aufs Bild ziehen, dann:</div>
+        <div class="btn-row">
+          <button class="btn primary" id="cropConfirm">Übernehmen</button>
+          <button class="btn" id="cropCancel">Abbrechen</button>
+        </div>
+      </div>
+    </div>
+    <div id="fmt-blur" class="fmt-panel" hidden>
+      <p class="fmt-hint">Für Hochkant-/Nicht-16:9-Bilder: scharfes Motiv mittig auf unscharfem Hintergrund.</p>
+      <div class="control-row"><label>Unschärfe <span id="fill-blur-disp">24&nbsp;px</span></label><input type="range" id="fill-blur" min="0" max="100" value="24" step="1"></div>
+      <div class="color-swatch" style="margin-bottom:4px">Hintergrundfarbe (Ränder)<input type="color" id="fill-bg" value="#101418"></div>
+      <div class="btn-row">
+        <button id="fill-apply" type="button" class="btn">Anwenden</button>
+        <button id="fill-revert" type="button" class="btn" disabled>Original</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- META-EFFEKTE (nach den Feineinstellungen, vor Overlay/Rahmen) -->
+  <div class="sidebar-section" id="meta-section">
+    <div class="section-label">Meta-Effekte</div>
+    <div class="effect-tabs" id="meta-tabs" style="grid-template-columns:1fr 1fr">
+      <button class="tab-btn" data-effect="slicer">Slicer</button>
+      <button class="tab-btn" data-effect="blend">Effekt-Verlauf</button>
+    </div>
+
+    <!-- SLICER -->
+    <div class="effect-panel controls" id="panel-slicer">
+      <p style="font-size:0.65rem;color:var(--muted);line-height:1.5;margin-bottom:4px">Bis zu 2 Schnittlinien per Drag auf dem Bild setzen. Pro Zone einen eigenen Effekt wählen.</p>
+      <select id="sl-orient">
+        <option value="h">Horizontal (waagerecht)</option>
+        <option value="v">Vertikal (senkrecht)</option>
+      </select>
+      <div id="sl-zone-controls" style="display:flex;flex-direction:column;gap:6px;margin-top:4px"><div style="display: flex; align-items: center; gap: 5px; font-size: 0.68rem; color: var(--muted);"><span style="min-width: 52px; font-size: 0.62rem;">Bild</span><select style="flex: 1 1 0%; font-family: inherit; font-size: 0.68rem; padding: 2px 4px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text);"><option value="original">Original</option><option value="duotone">Duotone</option><option value="dither">Dither</option><option value="glitch">Glitch</option><option value="ascii">Ascii</option><option value="risograph">Risograph</option><option value="posterize">Posterize</option><option value="solarize">Solarize</option><option value="pixelate">Pixelate</option><option value="halftone">Halftone</option><option value="threshold">Threshold</option></select></div></div>
+      <div style="display:flex;gap:5px;margin-top:6px">
+        <button class="btn" id="sl-add-line" style="flex:1">+ Schnittlinie</button>
+        <button class="btn" id="sl-clear-lines" style="flex:1">Alle löschen</button>
+      </div>
+    </div>
+
+    <!-- EFFECT BLEND / VIGNETTE -->
+    <div class="effect-panel controls" id="panel-blend">
+      <div class="section-label">Effektverlauf</div>
+      <p style="font-size:0.65rem;color:var(--muted);line-height:1.5">Wende den aktiven Effekt nur in einem Bereich an. Klick ins Vorschaubild setzt das Zentrum.</p>
+      <select id="bl-effect">
+        <option value="duotone">Duotone</option>
+        <option value="dither">Dither</option>
+        <option value="glitch">Glitch</option>
+        <option value="ascii">ASCII</option>
+        <option value="risograph">Riso</option>
+        <option value="posterize">Posterize</option>
+        <option value="solarize">Solarize</option>
+        <option value="pixelate">Pixelate</option>
+        <option value="halftone">Halftone</option>
+        <option value="threshold">Threshold</option>
+        <option value="blueprint">Blueprint</option>
+        <option value="gradmap">Gradient-Map</option>
+        <option value="flash">Blitzlicht</option>
+        <option value="neon">Neon-Noir</option>
+        <option value="micro">Industrial</option>
+        <option value="lowpoly">Low-Poly</option>
+      </select>
+      <select id="bl-shape">
+        <option value="radial">Radial (Kreis)</option>
+        <option value="horizontal">Horizontal (Balken)</option>
+        <option value="vertical">Vertikal (Säule)</option>
+      </select>
+      <div class="control-row"><label>Radius / Breite <span id="bl-radius-val">40</span>%</label><input type="range" id="bl-radius" min="5" max="100" value="40" step="1"></div>
+      <div class="control-row"><label>Weichheit <span id="bl-soft-val">30</span>%</label><input type="range" id="bl-soft" min="0" max="80" value="30" step="1"></div>
+      <div class="control-row"><label>Innen: Effekt oder Original</label>
+        <select id="bl-invert" style="margin-top:3px">
+          <option value="0">Innen = Effekt</option>
+          <option value="1">Innen = Original</option>
+        </select>
+      </div>
+      <div id="bl-center-display" style="font-size:0.65rem;color:var(--muted);margin-top:2px">Zentrum: Klick ins Bild</div>
+    </div>
+  </div>
+
+  <!-- RAHMEN -->
+  <div class="sidebar-section controls" id="deco-section">
+    <div class="section-label">Rahmen</div>
+    <div class="border-row">
+      <div class="control-row"><label>Dicke <span id="border-width-val">0</span>px</label><input type="range" id="border-width" min="0" max="30" value="0" step="1"></div>
+      <div class="color-swatch">Farbe<input type="color" id="border-color" value="#000000"></div>
+    </div>
+  </div>
+
+  <div class="actions" id="export-actions">
+    <div class="section-label" style="margin-bottom:4px">Export</div>
+    <button class="btn primary" id="downloadBtn">Als PNG speichern</button>
+  </div>
+</div>
+
+<!-- CANVAS AREA -->
+<div class="canvas-area" id="canvasArea">
+  <div class="placeholder" id="placeholder" style="display: none;">
+    <strong>Kein Bild geladen</strong>
+    Stichwort eingeben → Link öffnen → Bild hereinziehen
+  </div>
+  <div class="canvas-wrap" id="canvasWrap" style="display: block;">
+    <canvas id="mainCanvas" width="1600" height="899"></canvas>
+    <div id="slicerOverlay" style="display: none;"></div>
+    <div id="brushPreview"></div>
+  </div>
+  <div id="cropOverlay" style="display: none; position: absolute; inset: 0px; cursor: crosshair; z-index: 20; touch-action: none;">
+    <div id="cShadeT" style="position: absolute; background: rgba(0, 0, 0, 0.55); pointer-events: none; left: 0px; top: 0px; width: 0px; height: 0px;"></div>
+    <div id="cShadeB" style="position: absolute; background: rgba(0, 0, 0, 0.55); pointer-events: none; left: 0px; top: 0px; width: 0px; height: 0px;"></div>
+    <div id="cShadeL" style="position: absolute; background: rgba(0, 0, 0, 0.55); pointer-events: none; left: 0px; top: 0px; width: 0px; height: 0px;"></div>
+    <div id="cShadeR" style="position: absolute; background: rgba(0, 0, 0, 0.55); pointer-events: none; left: 0px; top: 0px; width: 0px; height: 0px;"></div>
+    <div id="cropRect" style="position: absolute; display: none; border: 2px solid rgb(255, 255, 255); box-shadow: rgba(0, 0, 0, 0.6) 0px 0px 0px 1px; pointer-events: none; left: 144.654px; top: 190.331px; width: 1051.37px; height: 591.397px;"></div>
+  </div>
+  <div class="processing" id="processingLabel">Wird berechnet …</div>
+</div>
+</div>
+
+<!-- Explainer Modal -->
+<div id="explainerOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:1000;align-items:center;justify-content:center">
+  <div id="explainerBox" style="background:var(--surface);border:1px solid var(--border);border-radius:10px;max-width:520px;width:90%;padding:2rem;position:relative;font-family:&#39;DM Mono&#39;,monospace;box-shadow:0 8px 40px rgba(0,0,0,.3)">
+    <div id="explainerPages">
+      <!-- Pages injected by JS -->
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border)">
+      <button id="explPrev" style="font-family:inherit;font-size:0.75rem;padding:0.4rem 0.9rem;border:1px solid var(--border);border-radius:5px;background:var(--panel);color:var(--muted);cursor:pointer">← Zurück</button>
+      <div style="display:flex;gap:6px;align-items:center" id="explDots"></div>
+      <button id="explNext" style="font-family:inherit;font-size:0.75rem;padding:0.4rem 0.9rem;border:1px solid var(--border);border-radius:5px;background:var(--accent);color:#fff;cursor:pointer">Weiter →</button>
+    </div>
+    <label style="display:flex;align-items:center;gap:6px;margin-top:0.9rem;font-size:0.65rem;color:var(--muted);cursor:pointer">
+      <input type="checkbox" id="explNeverShow" style="cursor:pointer"> Nicht mehr beim Start anzeigen
+    </label>
+  </div>
+</div>
+<script>
+// ── State ─────────────────────────────────────────────
+let originalImage = null;
+let glitchSeed = Math.random();
+let currentEffect = 'none';
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+
+// ── Overlay / Pop-Out / Unschärfe-Hintergrund (State) ──
+let sourceImage = null;      // unveraendertes Bild (nach Laden/Crop); Basis fuer Fill
+let overlayId = null;        // gewaehlte Rubrik oder null
+let overlayImg = null;       // geladenes Overlay-Bild
+let overlayMask = null;      // Canvas WxH, weiss = sichtbar
+let effectCache = null;      // Canvas WxH: Effektergebnis ohne Overlay/Rahmen (fuer schnelles Pinseln)
+let brushActive = false;
+let brushMode = 'erase';     // erase | paint
+let ovBrushSize = 80;
+let ovBrushHardness = 50;
+let fillActive = false;
+let fillBlur = 24;
+let pristineImage = null;   // Bild wie geladen — Basis für „Original wiederherstellen"
+let decoMode = 'none';      // none | overlay | border  (exklusiv)
+let formatMode = 'none';    // none | crop | blur
+
+// ── File loading ───────────────────────────────────────
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
+function loadFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => finishLoad(img);
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+function finishLoad(img) {
+  originalImage = img; sourceImage = img; pristineImage = img; fillActive = false;
+  canvas.width = img.width; canvas.height = img.height;
+  ctx.drawImage(img, 0, 0);
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('canvasWrap').style.display = 'block';
+  overlayId = null; overlayImg = null; overlayMask = null; effectCache = null; brushActive = false;
+  const rb=document.getElementById('restoreBtn'); if(rb) rb.disabled=false;
+  setFormatMode('none'); setDecoMode('none');
+  highlightOverlay(); updateFillUi();
+  slicerUpdateOverlay();
+  activateEffect('none');   // frisch geladenes Bild ohne Effekt anzeigen
+}
+
+// (Bildquellen-Leiste entfernt)
+
+// ── Slicer zone effect fix: preserve values across rebuilds ───────────
+// (slicerZoneEffects is declared in the slicer section, this just patches the select listener
+//  to store values back into the array immediately on change)
+function slicerSyncZoneEffects() {
+  document.querySelectorAll('#sl-zone-controls select').forEach((sel, i) => {
+    sel.addEventListener('change', () => {
+      slicerZoneEffects[i] = sel.value;
+    });
+  });
+}
+
+
+// ── Crop 16:9 ───────────────────────────────────────────────────
+const ASPECT = 16 / 9;
+// State machine: 'off' | 'drawing' | 'drawn'
+let cropState  = 'off';
+let cropAnchor = null;
+let cropCorner = null;
+const cropOv     = document.getElementById('cropOverlay');
+const cropRectEl = document.getElementById('cropRect');
+
+function enterCrop() {
+  if (!originalImage) return;
+  cropState = 'drawing'; cropAnchor = cropCorner = null;
+  cropRectEl.style.display = 'none';
+  clearShades();
+  cropOv.style.display = 'block';
+  document.getElementById('crop-controls-normal').style.display = 'none';
+  document.getElementById('crop-controls-active').style.display = 'flex';
+}
+function exitCrop() {
+  cropState = 'off'; cropAnchor = cropCorner = null;
+  cropOv.style.display = 'none';
+  cropRectEl.style.display = 'none';
+  document.getElementById('crop-controls-normal').style.display = 'block';
+  document.getElementById('crop-controls-active').style.display = 'none';
+}
+function clearShades() { updateCropShades(0,0,0,0); }
+
+document.getElementById('cropBtn').addEventListener('click', enterCrop);
+document.getElementById('cropCancel').addEventListener('click', exitCrop);
+document.getElementById('cropConfirm').addEventListener('click', () => {
+  if (!cropAnchor || !cropCorner) { exitCrop(); return; }
+  const {rx,ry,rw,rh} = getCropRect();
+  if (rw < 4 || rh < 4) { exitCrop(); return; }
+  const canvasRect = canvas.getBoundingClientRect();
+  const areaRect   = cropOv.getBoundingClientRect();
+  const offX = canvasRect.left - areaRect.left;
+  const offY = canvasRect.top  - areaRect.top;
+  const scX  = canvas.width  / canvasRect.width;
+  const scY  = canvas.height / canvasRect.height;
+  const cx = Math.max(0, Math.round((rx - offX) * scX));
+  const cy = Math.max(0, Math.round((ry - offY) * scY));
+  const cw = Math.min(Math.round(rw * scX), canvas.width  - cx);
+  const ch = Math.min(Math.round(rh * scY), canvas.height - cy);
+  if (cw < 2 || ch < 2) { exitCrop(); return; }
+  const tmp = document.createElement('canvas'); tmp.width=cw; tmp.height=ch;
+  tmp.getContext('2d').drawImage(canvas, cx, cy, cw, ch, 0, 0, cw, ch);
+  const img = new Image();
+  img.onload = () => {
+    originalImage=img; sourceImage=img; fillActive=false;
+    overlayId=null; overlayImg=null; overlayMask=null; effectCache=null; brushActive=false;
+    setDecoMode('none');
+    highlightOverlay(); updateFillUi(); updateBrushUi();
+    exitCrop(); applyEffect();
+  };
+  img.src = tmp.toDataURL();
+});
+
+cropOv.addEventListener('pointerdown', e => {
+  if (cropState === 'off') return;
+  e.preventDefault();
+  cropState  = 'drawing';
+  cropAnchor = getOvPos(e);
+  cropCorner = { x: cropAnchor.x, y: cropAnchor.y };
+  cropRectEl.style.display = 'none';
+  clearShades();
+  cropOv.setPointerCapture(e.pointerId);
+});
+cropOv.addEventListener('pointermove', e => {
+  if (cropState !== 'drawing' || !cropAnchor) return;
+  cropCorner = getOvPos(e);
+  const {rx,ry,rw,rh} = getCropRect();
+  if (rw > 2) {
+    cropRectEl.style.cssText =
+      `position:absolute;display:block;border:2px solid #fff;` +
+      `box-shadow:0 0 0 1px rgba(0,0,0,.6);pointer-events:none;` +
+      `left:${rx}px;top:${ry}px;width:${rw}px;height:${rh}px`;
+    updateCropShades(rx,ry,rw,rh);
+  }
+});
+cropOv.addEventListener('pointerup', e => {
+  if (cropState !== 'drawing') return;
+  cropCorner = getOvPos(e);
+  const {rw,rh} = getCropRect();
+  if (rw > 10 && rh > 10) {
+    cropState = 'drawn';
+  } else {
+    cropRectEl.style.display = 'none';
+    clearShades();
+    cropAnchor = cropCorner = null;
+  }
+});
+
+function getOvPos(e) {
+  const r = cropOv.getBoundingClientRect();
+  return { x: Math.max(0, Math.min(r.width,  e.clientX - r.left)),
+           y: Math.max(0, Math.min(r.height, e.clientY - r.top)) };
+}
+function getCropRect() {
+  if (!cropAnchor || !cropCorner) return {rx:0,ry:0,rw:0,rh:0};
+  let rx = Math.min(cropAnchor.x, cropCorner.x);
+  let ry = Math.min(cropAnchor.y, cropCorner.y);
+  let rw = Math.abs(cropCorner.x - cropAnchor.x);
+  let rh = Math.abs(cropCorner.y - cropAnchor.y);
+  if (rw / Math.max(rh,0.01) > ASPECT) rh = rw / ASPECT; else rw = rh * ASPECT;
+  const maxW = cropOv.offsetWidth - rx, maxH = cropOv.offsetHeight - ry;
+  if (rw > maxW) { rw = maxW; rh = rw / ASPECT; }
+  if (rh > maxH) { rh = maxH; rw = rh * ASPECT; }
+  return {rx, ry, rw, rh};
+}
+function updateCropShades(rx,ry,rw,rh) {
+  const W = cropOv.offsetWidth, H = cropOv.offsetHeight;
+  const s = (id,l,t,w,h) => {
+    document.getElementById(id).style.cssText =
+      `position:absolute;background:rgba(0,0,0,.55);pointer-events:none;` +
+      `left:${l}px;top:${t}px;width:${w}px;height:${h}px`;
+  };
+  s('cShadeT', 0,     0,     W,       ry     );
+  s('cShadeB', 0,     ry+rh, W,       H-ry-rh);
+  s('cShadeL', 0,     ry,    rx,      rh     );
+  s('cShadeR', rx+rw, ry,    W-rx-rw, rh     );
+}
+
+// ── File loading ───────────────────────────────────────
+// ── Effect tabs ────────────────────────────────────────
+function activateEffect(name){
+  currentEffect = name;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.effect===name));
+  document.querySelectorAll('.effect-panel').forEach(p=>p.classList.remove('active'));
+  const pnl = document.getElementById('panel-'+name); if(pnl) pnl.classList.add('active');
+  renderCustomPresets();
+  const so=document.getElementById('slicerOverlay'); if(so) so.style.display = name==='slicer' ? 'block' : 'none';
+  if (originalImage) applyEffect();
+}
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => activateEffect(btn.dataset.effect));
+});
+
+// ── Live controls ──────────────────────────────────────
+document.querySelectorAll('input[type=range]').forEach(inp => {
+  const out = document.getElementById(inp.id+'-val');
+  if (out) inp.addEventListener('input', ()=>{ out.textContent=inp.value; if(originalImage) applyEffect(); });
+});
+document.querySelectorAll('input[type=color],select').forEach(inp => {
+  inp.addEventListener('change', ()=>{ if(originalImage) applyEffect(); });
+});
+document.querySelectorAll('.preset-btn[data-shadow]').forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    document.getElementById('dt-shadow').value=btn.dataset.shadow;
+    document.getElementById('dt-highlight').value=btn.dataset.highlight;
+    if(originalImage) applyEffect();
+  });
+});
+document.querySelectorAll('.riso-pre').forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    document.getElementById('riso-c1').value=btn.dataset.c1;
+    document.getElementById('riso-c2').value=btn.dataset.c2;
+    if(originalImage) applyEffect();
+  });
+});
+document.querySelectorAll('.gm-pre').forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    document.getElementById('gm-low').value=btn.dataset.c0;
+    document.getElementById('gm-mid').value=btn.dataset.c1;
+    document.getElementById('gm-high').value=btn.dataset.c2;
+    if(originalImage) applyEffect();
+  });
+});
+document.querySelectorAll('.bp-pre').forEach(btn => {
+  btn.addEventListener('click', ()=>{
+    document.getElementById('bp-bg').value=btn.dataset.bg;
+    document.getElementById('bp-line').value=btn.dataset.line;
+    if(originalImage) applyEffect();
+  });
+});
+document.getElementById('gl-reseed').addEventListener('click', ()=>{ glitchSeed=Math.random(); if(originalImage) applyEffect(); });
+
+// ── Custom presets ─────────────────────────────────────
+function getPresetKey(){ return 'aufmacher_presets_'+currentEffect; }
+function getCurrentSettings() {
+  const settings = {};
+  const panel = document.getElementById('panel-'+currentEffect);
+  if (panel) panel.querySelectorAll('input[type=range],input[type=color],select').forEach(el => { settings[el.id] = el.value; });
+  return settings;
+}
+function applySettings(settings) {
+  Object.entries(settings).forEach(([id, val]) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.value = val;
+    const out = document.getElementById(id+'-val'); if (out) out.textContent = val;
+  });
+}
+function loadPresets(){ try{ return JSON.parse(localStorage.getItem(getPresetKey())||'[]'); }catch(e){ return []; } }
+function savePresets(presets){ localStorage.setItem(getPresetKey(), JSON.stringify(presets)); }
+function renderCustomPresets() {
+  const list = document.getElementById('customPresetList'); list.innerHTML = '';
+  loadPresets().forEach((p, i) => {
+    const row = document.createElement('div'); row.className = 'custom-preset-item';
+    const applyBtn = document.createElement('button'); applyBtn.textContent = p.name; applyBtn.title = p.name;
+    applyBtn.addEventListener('click', () => { applySettings(p.settings); if(originalImage) applyEffect(); });
+    const delBtn = document.createElement('button'); delBtn.className = 'del-preset'; delBtn.textContent = '×';
+    delBtn.addEventListener('click', () => { const ps=loadPresets(); ps.splice(i,1); savePresets(ps); renderCustomPresets(); });
+    row.appendChild(applyBtn); row.appendChild(delBtn); list.appendChild(row);
+  });
+}
+renderCustomPresets();
+document.getElementById('savePresetBtn').addEventListener('click', () => {
+  const name = document.getElementById('presetName').value.trim(); if (!name) return;
+  const presets = loadPresets(); presets.push({ name, settings: getCurrentSettings() });
+  savePresets(presets); document.getElementById('presetName').value = ''; renderCustomPresets();
+});
+
+// ── Helpers ────────────────────────────────────────────
+function hexToRgb(hex){return[parseInt(hex.slice(1,3),16),parseInt(hex.slice(3,5),16),parseInt(hex.slice(5,7),16)]}
+function showProcessing(v){document.getElementById('processingLabel').style.display=v?'block':'none'}
+function seededRand(seed){let s=seed;return()=>{s=(s*1664525+1013904223)&0xFFFFFFFF;return(s>>>0)/0xFFFFFFFF}}
+
+function applyGradientOverlay(ctx, W, H, gradA, gradB, gradDir, gradOpacity) {
+  if (gradDir === 'none' || gradOpacity <= 0) return;
+  let grad;
+  if (gradDir==='lr') grad=ctx.createLinearGradient(0,0,W,0);
+  else if (gradDir==='tb') grad=ctx.createLinearGradient(0,0,0,H);
+  else if (gradDir==='diag') grad=ctx.createLinearGradient(0,0,W,H);
+  else grad=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,Math.max(W,H)*0.7);
+  grad.addColorStop(0,gradA); grad.addColorStop(1,gradB);
+  ctx.save();
+  ctx.globalAlpha = gradOpacity/100;
+  ctx.fillStyle = grad;
+  ctx.fillRect(0,0,W,H);
+  ctx.restore();
+}
+
+function applyDuotone(imgData){
+  const shadow=hexToRgb(document.getElementById('dt-shadow').value);
+  const highlight=hexToRgb(document.getElementById('dt-highlight').value);
+  const contrast=parseInt(document.getElementById('dt-contrast').value)/100;
+  const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){
+    let lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    lum=Math.min(255,Math.max(0,(lum-128)*(1+contrast)+128));
+    const t=lum/255;
+    d[i]=shadow[0]+(highlight[0]-shadow[0])*t;
+    d[i+1]=shadow[1]+(highlight[1]-shadow[1])*t;
+    d[i+2]=shadow[2]+(highlight[2]-shadow[2])*t;
+  }
+  return imgData;
+}
+
+const PALETTES={bw:[[0,0,0],[255,255,255]],gameboy:[[15,56,15],[48,98,48],[139,172,15],[155,188,15]],cga:[[0,0,0],[85,255,255],[255,85,255],[255,255,255]],sepia:[[28,18,8],[89,65,35],[160,120,70],[225,190,140]]};
+function nearestColor(r,g,b,palette){let best=0,bestDist=Infinity;for(let i=0;i<palette.length;i++){const dr=r-palette[i][0],dg=g-palette[i][1],db=b-palette[i][2],dist=dr*dr+dg*dg+db*db;if(dist<bestDist){bestDist=dist;best=i;}}return palette[best];}
+function quantize4(r,g,b){return[Math.round(r/85)*85,Math.round(g/85)*85,Math.round(b/85)*85]}
+
+function applyDither(imgData){
+  const algo=document.getElementById('dith-algo').value;
+  const palName=document.getElementById('dith-palette').value;
+  const W=imgData.width,H=imgData.height;
+  const d=new Float32Array(imgData.data.length);
+  for(let i=0;i<imgData.data.length;i++)d[i]=imgData.data[i];
+  const palette=PALETTES[palName];
+  const useColor=palName==='color4';
+  if(algo==='bayer'){
+    const bayer=[[0,8,2,10],[12,4,14,6],[3,11,1,9],[15,7,13,5]];
+    for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+      const i=(y*W+x)*4,thresh=(bayer[y%4][x%4]/16-0.5)*80;
+      const l=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]+thresh;
+      const nc=useColor?quantize4(d[i]+thresh,d[i+1]+thresh,d[i+2]+thresh):nearestColor(l,l,l,palette);
+      imgData.data[i]=nc[0];imgData.data[i+1]=nc[1];imgData.data[i+2]=nc[2];
+    }
+    return imgData;
+  }
+  if(algo==='threshold'){
+    for(let i=0;i<d.length;i+=4){
+      const lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+      const nc=useColor?quantize4(d[i],d[i+1],d[i+2]):nearestColor(lum,lum,lum,palette);
+      imgData.data[i]=nc[0];imgData.data[i+1]=nc[1];imgData.data[i+2]=nc[2];
+    }
+    return imgData;
+  }
+  const KERNELS={floyd:[[1,0,7/16],[1,-1,3/16],[1,1,1/16],[2,0,5/16]],atkinson:[[0,1,1/8],[0,2,1/8],[1,-1,1/8],[1,0,1/8],[1,1,1/8],[2,0,1/8]]};
+  const kernel=KERNELS[algo]||KERNELS.floyd;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=(y*W+x)*4;
+    const lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    const nc=useColor?quantize4(d[i],d[i+1],d[i+2]):nearestColor(lum,lum,lum,palette);
+    const er=d[i]-nc[0],eg=d[i+1]-nc[1],eb=d[i+2]-nc[2];
+    imgData.data[i]=nc[0];imgData.data[i+1]=nc[1];imgData.data[i+2]=nc[2];
+    for(const[dy,dx,w]of kernel){
+      const nx=x+dx,ny=y+dy;
+      if(nx>=0&&nx<W&&ny>=0&&ny<H){const ni=(ny*W+nx)*4;d[ni]=Math.min(255,Math.max(0,d[ni]+er*w));d[ni+1]=Math.min(255,Math.max(0,d[ni+1]+eg*w));d[ni+2]=Math.min(255,Math.max(0,d[ni+2]+eb*w));}
+    }
+  }
+  return imgData;
+}
+
+function applyGlitch(imgData){
+  const intensity=parseInt(document.getElementById('gl-intensity').value);
+  const rgbShift=parseInt(document.getElementById('gl-rgb').value);
+  const scanPct=parseInt(document.getElementById('gl-scan').value)/100;
+  const glType=document.getElementById('gl-type').value;
+  const W=imgData.width,H=imgData.height;
+  const src=new Uint8ClampedArray(imgData.data);
+  let seed=Math.floor(glitchSeed*0xFFFFFF);
+  const rand=()=>{seed=(seed*1664525+1013904223)&0xFFFFFF;return seed/0xFFFFFF};
+  if(rgbShift>0)for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=(y*W+x)*4,sx=Math.min(W-1,x+rgbShift),si=(y*W+sx)*4;imgData.data[i]=src[si];
+    const bx=Math.max(0,x-Math.floor(rgbShift/2)),bi=(y*W+bx)*4;imgData.data[i+2]=src[bi+2];
+  }
+  if(glType==='horizontal'||glType==='both'){
+    for(let j=0;j<src.length;j++)src[j]=imgData.data[j];
+    let y=0;while(y<H){const sliceH=Math.max(1,Math.floor(rand()*20));if(rand()<intensity/200){const shift=Math.floor((rand()-0.5)*intensity*3);for(let sy=y;sy<Math.min(y+sliceH,H);sy++)for(let x=0;x<W;x++){const nx=(x+shift+W)%W,di=(sy*W+x)*4,si2=(sy*W+nx)*4;imgData.data[di]=src[si2];imgData.data[di+1]=src[si2+1];imgData.data[di+2]=src[si2+2];}}y+=sliceH;}
+  }
+  if(glType==='noise'||glType==='both'){const noisePx=Math.floor(W*H*intensity/2000);for(let n=0;n<noisePx;n++){const x=Math.floor(rand()*W),y=Math.floor(rand()*H),i=(y*W+x)*4;imgData.data[i]=rand()<0.5?0:255;imgData.data[i+1]=rand()<0.5?0:255;imgData.data[i+2]=rand()<0.5?0:255;}}
+  if(scanPct>0)for(let y=0;y<H;y+=2)for(let x=0;x<W;x++){const i=(y*W+x)*4;imgData.data[i]=Math.max(0,imgData.data[i]*(1-scanPct*.6));imgData.data[i+1]=Math.max(0,imgData.data[i+1]*(1-scanPct*.6));imgData.data[i+2]=Math.max(0,imgData.data[i+2]*(1-scanPct*.6));}
+  return imgData;
+}
+
+function applyASCII(){
+  const mode=document.getElementById('asc-mode').value;
+  const charSize=parseInt(document.getElementById('asc-size').value);
+  const weight=document.getElementById('asc-weight').value;
+  const fg=document.getElementById('asc-fg').value;
+  const bg=document.getElementById('asc-bg').value;
+  const colorMix=parseInt(document.getElementById('asc-color').value)/100;
+  const W=canvas.width,H=canvas.height;
+  const CHARS={classic:['@','#','S','%','?','*','+',';',':',' '],block:['█','▓','▒','░',' '],minimal:['█','▪',' ']};
+  const chars=CHARS[mode];
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+  const tc=tmp.getContext('2d');tc.drawImage(originalImage,0,0);
+  const src=tc.getImageData(0,0,W,H).data;
+  ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+  ctx.font=`${weight} ${charSize}px "Courier New",monospace`;ctx.textBaseline='top';
+  const cellW=charSize*0.6,cellH=charSize;
+  for(let y=0;y<H;y+=cellH)for(let x=0;x<W;x+=cellW){
+    const px=Math.min(W-1,Math.round(x+cellW/2)),py=Math.min(H-1,Math.round(y+cellH/2));
+    const i=(py*W+px)*4;
+    const r=src[i],g=src[i+1],b=src[i+2];
+    const lum=0.299*r+0.587*g+0.114*b;
+    const ci=Math.floor((lum/255)*(chars.length-1));
+    const fgRgb=hexToRgb(fg);
+    if(colorMix>0){const mr=Math.round(fgRgb[0]*(1-colorMix)+r*colorMix),mg=Math.round(fgRgb[1]*(1-colorMix)+g*colorMix),mb=Math.round(fgRgb[2]*(1-colorMix)+b*colorMix);ctx.fillStyle=`rgb(${mr},${mg},${mb})`;}
+    else ctx.fillStyle=fg;
+    ctx.fillText(chars[ci],x,y);
+  }
+}
+
+function applyRisograph(){
+  const c1=hexToRgb(document.getElementById('riso-c1').value);
+  const c2=hexToRgb(document.getElementById('riso-c2').value);
+  const offset=parseInt(document.getElementById('riso-offset').value);
+  const grain=parseInt(document.getElementById('riso-grain').value);
+  const W=canvas.width,H=canvas.height;
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+  const tc=tmp.getContext('2d');tc.drawImage(originalImage,0,0);
+  const src=tc.getImageData(0,0,W,H).data;
+  const out=ctx.createImageData(W,H);const d=out.data;
+  const rand=seededRand(42);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=(y*W+x)*4;
+    const lum1=1-(0.299*src[i]+0.587*src[i+1]+0.114*src[i+2])/255;
+    const ox=Math.max(0,Math.min(W-1,x-offset)),oy=Math.max(0,Math.min(H-1,y-offset));
+    const i2=(oy*W+ox)*4;
+    const lum2=1-(0.299*src[i2]+0.587*src[i2+1]+0.114*src[i2+2])/255;
+    const noise=grain>0?(rand()-0.5)*grain/100:0;
+    const t1=Math.min(1,Math.max(0,lum1+noise)),t2=Math.min(1,Math.max(0,lum2+noise));
+    d[i]=Math.round(255*(1-(1-c1[0]/255*t1)*(1-c2[0]/255*t2)));
+    d[i+1]=Math.round(255*(1-(1-c1[1]/255*t1)*(1-c2[1]/255*t2)));
+    d[i+2]=Math.round(255*(1-(1-c1[2]/255*t1)*(1-c2[2]/255*t2)));
+    d[i+3]=255;
+  }
+  ctx.putImageData(out,0,0);
+}
+
+function applyPosterize(imgData){
+  const levels=parseInt(document.getElementById('pos-levels').value);
+  const mode=document.getElementById('pos-mode').value;
+  const d=imgData.data;const step=255/(levels-1);
+  for(let i=0;i<d.length;i+=4){
+    if(mode==='lum'){const lum=Math.round((0.299*d[i]+0.587*d[i+1]+0.114*d[i+2])/step)*step;d[i]=d[i+1]=d[i+2]=Math.min(255,lum);}
+    else{d[i]=Math.round(d[i]/step)*step;d[i+1]=Math.round(d[i+1]/step)*step;d[i+2]=Math.round(d[i+2]/step)*step;}
+  }
+  return imgData;
+}
+
+function applySolarize(imgData){
+  const thresh=parseInt(document.getElementById('sol-thresh').value);
+  const mode=document.getElementById('sol-mode').value;
+  const strength=parseInt(document.getElementById('sol-strength').value)/100;
+  const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){
+    if(mode==='classic'){d[i]=d[i]>thresh?255-d[i]:d[i];d[i+1]=d[i+1]>thresh?255-d[i+1]:d[i+1];d[i+2]=d[i+2]>thresh?255-d[i+2]:d[i+2];}
+    else if(mode==='partial'){const lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];if(lum>thresh){d[i]=Math.round(d[i]*(1-strength)+(255-d[i])*strength);d[i+1]=Math.round(d[i+1]*(1-strength)+(255-d[i+1])*strength);d[i+2]=Math.round(d[i+2]*(1-strength)+(255-d[i+2])*strength);}}
+    else{const r=d[i]/255,g2=d[i+1]/255,b=d[i+2]/255;const mx=Math.max(r,g2,b),mn=Math.min(r,g2,b);let h=0,s=0,l=(mx+mn)/2;if(mx!==mn){const delta=mx-mn;s=l>0.5?delta/(2-mx-mn):delta/(mx+mn);if(mx===r)h=(g2-b)/delta+(g2<b?6:0);else if(mx===g2)h=(b-r)/delta+2;else h=(r-g2)/delta+4;h/=6;}if(l>thresh/255)h=(h+0.5*strength)%1;const hue2rgb=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};const q=l<0.5?l*(1+s):l+s-l*s,p=2*l-q;d[i]=Math.round(hue2rgb(p,q,h+1/3)*255);d[i+1]=Math.round(hue2rgb(p,q,h)*255);d[i+2]=Math.round(hue2rgb(p,q,h-1/3)*255);}
+  }
+  return imgData;
+}
+
+function applyPixelate(){
+  const blockSize=parseInt(document.getElementById('pix-size').value);
+  const mode=document.getElementById('pix-mode').value;
+  const W=canvas.width,H=canvas.height;
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+  const tc=tmp.getContext('2d');tc.drawImage(originalImage,0,0);
+  const src=tc.getImageData(0,0,W,H).data;
+  ctx.clearRect(0,0,W,H);
+  for(let y=0;y<H;y+=blockSize)for(let x=0;x<W;x+=blockSize){
+    let r=0,g=0,b=0,count=0;
+    for(let dy=0;dy<blockSize&&y+dy<H;dy++)for(let dx=0;dx<blockSize&&x+dx<W;dx++){const i=((y+dy)*W+(x+dx))*4;r+=src[i];g+=src[i+1];b+=src[i+2];count++;}
+    r=Math.round(r/count);g=Math.round(g/count);b=Math.round(b/count);
+    ctx.fillStyle=`rgb(${r},${g},${b})`;
+    const cx2=x+blockSize/2,cy2=y+blockSize/2;
+    if(mode==='circle'){ctx.beginPath();ctx.arc(cx2,cy2,blockSize/2,0,Math.PI*2);ctx.fill();}
+    else if(mode==='diamond'){const s=blockSize/2;ctx.beginPath();ctx.moveTo(cx2,cy2-s);ctx.lineTo(cx2+s,cy2);ctx.lineTo(cx2,cy2+s);ctx.lineTo(cx2-s,cy2);ctx.closePath();ctx.fill();}
+    else ctx.fillRect(x,y,blockSize,blockSize);
+  }
+}
+
+function applyHalftone() {
+  const size = parseInt(document.getElementById('ht-size').value);
+  const overlap = parseInt(document.getElementById('ht-overlap').value) / 100;
+  const mode = document.getElementById('ht-mode').value;
+  const colorMode = document.getElementById('ht-color').value;
+  const bgColor = document.getElementById('ht-bg').value;
+  const fgColor = document.getElementById('ht-fg').value;
+  const W = canvas.width, H = canvas.height;
+  const tmp = document.createElement('canvas'); tmp.width=W; tmp.height=H;
+  const tc = tmp.getContext('2d'); tc.drawImage(originalImage,0,0);
+  const src = tc.getImageData(0,0,W,H).data;
+  ctx.fillStyle = bgColor; ctx.fillRect(0,0,W,H);
+  const step = size * (1.6 - overlap * 1.2); // tighter grid = more overlap
+  ctx.globalCompositeOperation = overlap > 0 ? 'multiply' : 'source-over';
+  for (let gy=0; gy<H+step; gy+=step) {
+    for (let gx=0; gx<W+step; gx+=step) {
+      const px=Math.min(W-1,Math.round(gx)), py=Math.min(H-1,Math.round(gy));
+      const idx=(py*W+px)*4;
+      const r=src[idx],g2=src[idx+1],b=src[idx+2];
+      const lum=0.299*r+0.587*g2+0.114*b;
+      let fill;
+      if (colorMode==='bw') fill=fgColor;
+      else if (colorMode==='sepia') { const nr=Math.min(255,r*.393+g2*.769+b*.189),ng=Math.min(255,r*.349+g2*.686+b*.168),nb=Math.min(255,r*.272+g2*.534+b*.131); fill=`rgb(${Math.round(nr)},${Math.round(ng)},${Math.round(nb)})`; }
+      else fill=`rgb(${r},${g2},${b})`;
+      // overlap boosts max radius
+      const maxR = size * (0.9 + overlap * 0.8);
+      const radius=(1-lum/255)*maxR;
+      if (radius<0.4) continue;
+      ctx.fillStyle=fill; ctx.beginPath();
+      if (mode==='circle') ctx.arc(gx,gy,radius,0,Math.PI*2);
+      else if (mode==='square') ctx.rect(gx-radius,gy-radius,radius*2,radius*2);
+      else { const t=radius*.4; ctx.rect(gx-t,gy-radius,t*2,radius*2); ctx.rect(gx-radius,gy-t,radius*2,t*2); }
+      ctx.fill();
+    }
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+function applyThreshold(imgData) {
+  const level = parseInt(document.getElementById('thr-level').value);
+  const dark = hexToRgb(document.getElementById('thr-dark').value);
+  const light = hexToRgb(document.getElementById('thr-light').value);
+  const mode = document.getElementById('thr-mode').value;
+  const contrast = parseInt(document.getElementById('thr-contrast').value);
+  const d = imgData.data;
+  for (let i=0; i<d.length; i+=4) {
+    let lum = 0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    // apply pre-contrast
+    lum = Math.min(255,Math.max(0,(lum-128)*(1+contrast/50)+128));
+    if (mode==='hard') {
+      const c = lum < level ? dark : light;
+      d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2];
+    } else if (mode==='smooth') {
+      const edge = 8;
+      const t = Math.min(1,Math.max(0,(lum-level+edge)/(edge*2)));
+      d[i]  =Math.round(dark[0]+(light[0]-dark[0])*t);
+      d[i+1]=Math.round(dark[1]+(light[1]-dark[1])*t);
+      d[i+2]=Math.round(dark[2]+(light[2]-dark[2])*t);
+    } else {
+      // duotone-mix: use original colour tinted toward dark/light
+      const t = lum/255;
+      const origR=d[i],origG=d[i+1],origB=d[i+2];
+      if (lum < level) {
+        d[i]  =Math.round(origR*0.3+dark[0]*0.7);
+        d[i+1]=Math.round(origG*0.3+dark[1]*0.7);
+        d[i+2]=Math.round(origB*0.3+dark[2]*0.7);
+      } else {
+        d[i]  =Math.round(origR*0.3+light[0]*0.7);
+        d[i+1]=Math.round(origG*0.3+light[1]*0.7);
+        d[i+2]=Math.round(origB*0.3+light[2]*0.7);
+      }
+    }
+  }
+  return imgData;
+}
+
+
+// updated applyHalftone uses overlap, no angle
+function applyHalftone() {
+  const size = parseInt(document.getElementById('ht-size').value);
+  const overlap = parseInt(document.getElementById('ht-overlap').value) / 100;
+  const mode = document.getElementById('ht-mode').value;
+  const colorMode = document.getElementById('ht-color').value;
+  const bgColor = document.getElementById('ht-bg').value;
+  const fgColor = document.getElementById('ht-fg').value;
+  const W = canvas.width, H = canvas.height;
+  const tmp = document.createElement('canvas'); tmp.width=W; tmp.height=H;
+  const tc = tmp.getContext('2d'); tc.drawImage(originalImage,0,0);
+  const src = tc.getImageData(0,0,W,H).data;
+  ctx.fillStyle = bgColor; ctx.fillRect(0,0,W,H);
+  const step = size * (1.6 - overlap * 1.2);
+  ctx.globalCompositeOperation = overlap > 0 ? 'multiply' : 'source-over';
+  for (let gy=0; gy<H+step; gy+=step) {
+    for (let gx=0; gx<W+step; gx+=step) {
+      const px=Math.min(W-1,Math.round(gx)), py=Math.min(H-1,Math.round(gy));
+      const idx=(py*W+px)*4; const r=src[idx],g2=src[idx+1],b=src[idx+2];
+      const lum=0.299*r+0.587*g2+0.114*b;
+      let fill;
+      if (colorMode==='bw') fill=fgColor;
+      else if (colorMode==='sepia') { const nr=Math.min(255,r*.393+g2*.769+b*.189),ng=Math.min(255,r*.349+g2*.686+b*.168),nb=Math.min(255,r*.272+g2*.534+b*.131); fill=`rgb(${Math.round(nr)},${Math.round(ng)},${Math.round(nb)})`; }
+      else fill=`rgb(${r},${g2},${b})`;
+      const maxR = size * (0.9 + overlap * 0.8);
+      const radius=(1-lum/255)*maxR;
+      if (radius<0.4) continue;
+      ctx.fillStyle=fill; ctx.beginPath();
+      if (mode==='circle') ctx.arc(gx,gy,radius,0,Math.PI*2);
+      else if (mode==='square') ctx.rect(gx-radius,gy-radius,radius*2,radius*2);
+      else { const t=radius*.4; ctx.rect(gx-t,gy-radius,t*2,radius*2); ctx.rect(gx-radius,gy-t,radius*2,t*2); }
+      ctx.fill();
+    }
+  }
+  ctx.globalCompositeOperation = 'source-over';
+}
+
+function applyThreshold(imgData) {
+  const level = parseInt(document.getElementById('thr-level').value);
+  const dark = hexToRgb(document.getElementById('thr-dark').value);
+  const light = hexToRgb(document.getElementById('thr-light').value);
+  const mode = document.getElementById('thr-mode').value;
+  const contrast = parseInt(document.getElementById('thr-contrast').value);
+  const d = imgData.data;
+  for (let i=0; i<d.length; i+=4) {
+    let lum = 0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    lum = Math.min(255,Math.max(0,(lum-128)*(1+contrast/50)+128));
+    if (mode==='hard') {
+      const c = lum < level ? dark : light;
+      d[i]=c[0]; d[i+1]=c[1]; d[i+2]=c[2];
+    } else if (mode==='smooth') {
+      const edge = 8, t = Math.min(1,Math.max(0,(lum-level+edge)/(edge*2)));
+      d[i]=Math.round(dark[0]+(light[0]-dark[0])*t);
+      d[i+1]=Math.round(dark[1]+(light[1]-dark[1])*t);
+      d[i+2]=Math.round(dark[2]+(light[2]-dark[2])*t);
+    } else {
+      if (lum < level) { d[i]=Math.round(d[i]*0.3+dark[0]*0.7); d[i+1]=Math.round(d[i+1]*0.3+dark[1]*0.7); d[i+2]=Math.round(d[i+2]*0.3+dark[2]*0.7); }
+      else { d[i]=Math.round(d[i]*0.3+light[0]*0.7); d[i+1]=Math.round(d[i+1]*0.3+light[1]*0.7); d[i+2]=Math.round(d[i+2]*0.3+light[2]*0.7); }
+    }
+  }
+  return imgData;
+}
+
+// ── Blueprint (Sobel-Kanten + einfarbige Tönung) ───────
+function applyBlueprint(imgData){
+  const bg=hexToRgb(document.getElementById('bp-bg').value);
+  const line=hexToRgb(document.getElementById('bp-line').value);
+  const strength=parseInt(document.getElementById('bp-strength').value)/100;
+  const W=imgData.width,H=imgData.height;
+  const d=imgData.data;
+  const lum=new Float32Array(W*H);
+  for(let p=0,q=0;p<d.length;p+=4,q++) lum[q]=0.299*d[p]+0.587*d[p+1]+0.114*d[p+2];
+  const gain=1+strength*8;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=(y*W+x)*4;
+    const xm=x>0?x-1:x, xp=x<W-1?x+1:x, ym=y>0?y-1:y, yp=y<H-1?y+1:y;
+    const tl=lum[ym*W+xm],t=lum[ym*W+x],tr=lum[ym*W+xp];
+    const ml=lum[y*W+xm],               mr=lum[y*W+xp];
+    const bl=lum[yp*W+xm],b=lum[yp*W+x],br=lum[yp*W+xp];
+    const gx=(tr+2*mr+br)-(tl+2*ml+bl);
+    const gy=(bl+2*b+br)-(tl+2*t+tr);
+    const mag=Math.sqrt(gx*gx+gy*gy)/1442;
+    const e=Math.min(1,mag*gain);
+    d[i]  =bg[0]+(line[0]-bg[0])*e;
+    d[i+1]=bg[1]+(line[1]-bg[1])*e;
+    d[i+2]=bg[2]+(line[2]-bg[2])*e;
+  }
+  return imgData;
+}
+
+// ── Gradient-Map (Helligkeit auf 3-Stopp-Verlauf) ──────
+function applyGradientMap(imgData){
+  const c0=hexToRgb(document.getElementById('gm-low').value);
+  const c1=hexToRgb(document.getElementById('gm-mid').value);
+  const c2=hexToRgb(document.getElementById('gm-high').value);
+  const contrast=parseInt(document.getElementById('gm-contrast').value)/100;
+  const d=imgData.data;
+  for(let i=0;i<d.length;i+=4){
+    let lum=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
+    lum=Math.min(255,Math.max(0,(lum-128)*(1+contrast)+128));
+    const t=lum/255;
+    if(t<0.5){const u=t/0.5;d[i]=c0[0]+(c1[0]-c0[0])*u;d[i+1]=c0[1]+(c1[1]-c0[1])*u;d[i+2]=c0[2]+(c1[2]-c0[2])*u;}
+    else{const u=(t-0.5)/0.5;d[i]=c1[0]+(c2[0]-c1[0])*u;d[i+1]=c1[1]+(c2[1]-c1[1])*u;d[i+2]=c1[2]+(c2[2]-c1[2])*u;}
+  }
+  return imgData;
+}
+
+// ── Blitzlicht-Schnappschuss (draw-only) ───────────────
+function applyFlash(){
+  const exposure=parseInt(document.getElementById('fl-exposure').value)/100;
+  const vig=parseInt(document.getElementById('fl-vignette').value)/100;
+  const grain=parseInt(document.getElementById('fl-grain').value);
+  const stamp=document.getElementById('fl-stamp').value==='1';
+  const W=canvas.width,H=canvas.height;
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+  const tc=tmp.getContext('2d');tc.drawImage(originalImage,0,0);
+  const img=tc.getImageData(0,0,W,H);const d=img.data;
+  const rand=seededRand(1234);
+  const cx=W/2,cy=H*0.45,maxD=Math.sqrt(cx*cx+cy*cy);
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){
+    const i=(y*W+x)*4;
+    for(let c=0;c<3;c++){let v=d[i+c];v=v+(255-v)*exposure*0.55;d[i+c]=v;}
+    if(vig>0){const dx=x-cx,dy=y-cy,dd=Math.sqrt(dx*dx+dy*dy)/maxD;const f=1-Math.pow(dd,2.2)*vig;d[i]*=f;d[i+1]*=f;d[i+2]*=f;}
+    if(grain>0){const n=(rand()-0.5)*grain;d[i]+=n;d[i+1]+=n;d[i+2]+=n;}
+  }
+  ctx.putImageData(img,0,0);
+  if(stamp){
+    const dt=new Date();
+    const dd=String(dt.getDate()).padStart(2,'0'),mm=String(dt.getMonth()+1).padStart(2,'0'),yy=String(dt.getFullYear()).slice(2);
+    const txt=`${dd}.${mm}.'${yy}`;
+    const fs=Math.max(14,Math.round(H*0.045));
+    ctx.save();
+    ctx.font=`700 ${fs}px "Courier New",monospace`;
+    ctx.textBaseline='bottom';ctx.textAlign='right';
+    ctx.shadowColor='rgba(255,120,0,0.85)';ctx.shadowBlur=fs*0.5;
+    ctx.fillStyle='#ff8a00';
+    ctx.fillText(txt,W-fs*0.8,H-fs*0.7);
+    ctx.restore();
+  }
+}
+
+// ── Neon-Noir (dunkle Tönung + Bloom + Korn, draw-only) ─
+function applyNeon(){
+  const glow=parseInt(document.getElementById('nn-glow').value)/100;
+  const dark=parseInt(document.getElementById('nn-dark').value)/100;
+  const tint=hexToRgb(document.getElementById('nn-tint').value);
+  const grain=parseInt(document.getElementById('nn-grain').value);
+  const W=canvas.width,H=canvas.height;
+  const base=document.createElement('canvas');base.width=W;base.height=H;
+  const bc=base.getContext('2d');bc.drawImage(originalImage,0,0);
+  const img=bc.getImageData(0,0,W,H);const d=img.data;
+  for(let i=0;i<d.length;i+=4){
+    let r=d[i],g=d[i+1],b=d[i+2];
+    const lum=0.299*r+0.587*g+0.114*b;
+    const sat=1.5;r=lum+(r-lum)*sat;g=lum+(g-lum)*sat;b=lum+(b-lum)*sat;
+    const shadowT=Math.pow(1-lum/255,1.5)*dark;
+    r=r*(1-shadowT)+tint[0]*shadowT*0.7-dark*20;
+    g=g*(1-shadowT)+tint[1]*shadowT*0.7-dark*20;
+    b=b*(1-shadowT)+tint[2]*shadowT*0.7-dark*20;
+    d[i]=r;d[i+1]=g;d[i+2]=b;
+  }
+  bc.putImageData(img,0,0);
+  ctx.clearRect(0,0,W,H);ctx.drawImage(base,0,0);
+  if(glow>0){
+    const bloom=document.createElement('canvas');bloom.width=W;bloom.height=H;
+    const gc=bloom.getContext('2d');
+    const bimg=bc.getImageData(0,0,W,H);const bd=bimg.data;
+    for(let i=0;i<bd.length;i+=4){const lum=0.299*bd[i]+0.587*bd[i+1]+0.114*bd[i+2];const k=lum>150?(lum-150)/105:0;bd[i]*=k;bd[i+1]*=k;bd[i+2]*=k;bd[i+3]=255;}
+    gc.putImageData(bimg,0,0);
+    ctx.save();
+    ctx.globalCompositeOperation='lighter';
+    ctx.globalAlpha=Math.min(1,glow);
+    ctx.filter=`blur(${Math.max(2,Math.round(W*0.01))}px)`;ctx.drawImage(bloom,0,0);ctx.filter='none';
+    ctx.globalAlpha=Math.min(1,glow*0.7);
+    ctx.filter=`blur(${Math.max(4,Math.round(W*0.025))}px)`;ctx.drawImage(bloom,0,0);ctx.filter='none';
+    ctx.restore();
+  }
+  if(grain>0){
+    const gimg=ctx.getImageData(0,0,W,H);const gd=gimg.data;const rand=seededRand(77);
+    for(let i=0;i<gd.length;i+=4){const n=(rand()-0.5)*grain;gd[i]+=n;gd[i+1]+=n;gd[i+2]+=n;}
+    ctx.putImageData(gimg,0,0);
+  }
+}
+
+// ── Micro-Industrial (Marken/Barcode/Raster, draw-only) ─
+function applyMicro(){
+  const color=document.getElementById('mi-color').value;
+  const gridN=parseInt(document.getElementById('mi-grid').value);
+  const elements=document.getElementById('mi-elements').value;
+  const tone=document.getElementById('mi-tone').value;
+  const W=canvas.width,H=canvas.height;
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+  const tc=tmp.getContext('2d');tc.drawImage(originalImage,0,0);
+  if(tone==='gray'){
+    const im=tc.getImageData(0,0,W,H);const d=im.data;
+    for(let i=0;i<d.length;i+=4){const l=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];d[i]=d[i+1]=d[i+2]=l;}
+    tc.putImageData(im,0,0);
+  }
+  ctx.clearRect(0,0,W,H);ctx.drawImage(tmp,0,0);
+  ctx.save();
+  ctx.strokeStyle=color;ctx.fillStyle=color;
+  const unit=Math.max(1,Math.round(Math.min(W,H)/900*2));
+  ctx.lineWidth=unit;
+  if((elements==='full'||elements==='grid')&&gridN>0){
+    ctx.globalAlpha=0.28;
+    const step=Math.max(20,Math.round(W/gridN));
+    for(let x=step;x<W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=step;y<H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    ctx.globalAlpha=1;
+  }
+  if(elements==='full'||elements==='marks'){
+    const m=Math.round(Math.min(W,H)*0.06),r=m*0.5,off=m*0.9;
+    const cross=(cx,cy)=>{ctx.beginPath();ctx.moveTo(cx-r,cy);ctx.lineTo(cx+r,cy);ctx.moveTo(cx,cy-r);ctx.lineTo(cx,cy+r);ctx.stroke();ctx.beginPath();ctx.arc(cx,cy,r*0.6,0,Math.PI*2);ctx.stroke();};
+    cross(off,off);cross(W-off,off);cross(off,H-off);cross(W-off,H-off);
+    const rnd=seededRand(9);
+    const bx=off,by=H-off,bh=m*0.8,bw=m*3;let px=bx;
+    while(px<bx+bw){const w=Math.max(unit,Math.round(rnd()*unit*4));if(rnd()<0.5)ctx.fillRect(px,by-bh,w,bh);px+=w+unit;}
+    const fs=Math.max(10,Math.round(H*0.02));
+    ctx.font=`500 ${fs}px "DM Mono",monospace`;ctx.textBaseline='top';
+    ctx.fillText('REF · '+W+'×'+H,off,off*0.35);
+  }
+  ctx.restore();
+}
+
+// ── Low-Poly / Triangulation (gejittertes Dreiecksgitter, draw-only) ─
+function applyLowpoly(){
+  const cell=parseInt(document.getElementById('lp-cell').value);
+  const jitterAmt=parseInt(document.getElementById('lp-jitter').value)/100;
+  const outline=document.getElementById('lp-outline').value==='1';
+  const W=canvas.width,H=canvas.height;
+  const tmp=document.createElement('canvas');tmp.width=W;tmp.height=H;
+  const tc=tmp.getContext('2d');tc.drawImage(originalImage,0,0);
+  const src=tc.getImageData(0,0,W,H).data;
+  const rand=seededRand(2025);
+  const cols=Math.max(1,Math.round(W/cell)), rows=Math.max(1,Math.round(H/cell));
+  const cw=W/cols, ch=H/rows;
+  // gejittertes Vertex-Gitter (Randpunkte bleiben am Rand)
+  const pts=[];
+  for(let r=0;r<=rows;r++){
+    pts[r]=[];
+    for(let c=0;c<=cols;c++){
+      let x=c*cw, y=r*ch;
+      const onEdge=(c===0||c===cols||r===0||r===rows);
+      if(!onEdge){ x+=(rand()-0.5)*cw*jitterAmt; y+=(rand()-0.5)*ch*jitterAmt; }
+      pts[r][c]={x:Math.max(0,Math.min(W,x)), y:Math.max(0,Math.min(H,y))};
+    }
+  }
+  const sampleAt=(x,y)=>{
+    const xi=Math.max(0,Math.min(W-1,Math.round(x))), yi=Math.max(0,Math.min(H-1,Math.round(y)));
+    const i=(yi*W+xi)*4; return [src[i],src[i+1],src[i+2]];
+  };
+  ctx.clearRect(0,0,W,H);
+  ctx.lineJoin='round';
+  const outW=Math.max(1,Math.round(Math.min(W,H)/1400));
+  const drawTri=(a,b,c)=>{
+    const cx=(a.x+b.x+c.x)/3, cy=(a.y+b.y+c.y)/3;
+    const s0=sampleAt(cx,cy),s1=sampleAt(a.x,a.y),s2=sampleAt(b.x,b.y),s3=sampleAt(c.x,c.y);
+    const r=Math.round((s0[0]*2+s1[0]+s2[0]+s3[0])/5);
+    const g=Math.round((s0[1]*2+s1[1]+s2[1]+s3[1])/5);
+    const bl=Math.round((s0[2]*2+s1[2]+s2[2]+s3[2])/5);
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.lineTo(c.x,c.y);ctx.closePath();
+    ctx.fillStyle=`rgb(${r},${g},${bl})`;
+    // gleichfarbig 1px umranden, damit keine AA-Fugen zwischen den Dreiecken bleiben
+    ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=1;ctx.stroke();ctx.fill();
+    if(outline){ctx.strokeStyle='rgba(0,0,0,0.2)';ctx.lineWidth=outW;ctx.stroke();}
+  };
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const tl=pts[r][c],tr=pts[r][c+1],bl=pts[r+1][c],br=pts[r+1][c+1];
+    if((r+c)%2===0){ drawTri(tl,tr,bl); drawTri(tr,br,bl); }
+    else{ drawTri(tl,tr,br); drawTri(tl,br,bl); }
+  }
+}
+
+// ── Slicer (manual handles) ────────────────────────────
+const EFFECT_LIST = ['original','duotone','dither','glitch','ascii','risograph','posterize','solarize','pixelate','halftone','threshold','blueprint','gradmap','flash','neon','micro','lowpoly'];
+const EFFECT_LABELS = {original:'Original',duotone:'Duotone',dither:'Dither',glitch:'Glitch',ascii:'ASCII',risograph:'Risograph',posterize:'Posterize',solarize:'Solarize',pixelate:'Pixelate',halftone:'Halftone',threshold:'Threshold',blueprint:'Blueprint',gradmap:'Gradient-Map',flash:'Blitzlicht',neon:'Neon-Noir',micro:'Industrial',lowpoly:'Low-Poly'};
+let slicerLines = []; // [{pos:0.33}, {pos:0.66}] as fractions 0-1
+let slicerZoneEffects = ['duotone','original','duotone']; // effects per zone
+let slicerDragging = null;
+
+function slicerZoneCount(){ return slicerLines.length + 1; }
+
+function slicerBuildZoneControls() {
+  const c = document.getElementById('sl-zone-controls'); c.innerHTML = '';
+  const orient = document.getElementById('sl-orient').value;
+  const n = slicerZoneCount();
+  // Preserve existing values, pad if needed
+  while (slicerZoneEffects.length < n) slicerZoneEffects.push('original');
+  for (let z=0; z<n; z++) {
+    const row = document.createElement('div');
+    row.style.cssText='display:flex;align-items:center;gap:5px;font-size:0.68rem;color:var(--muted)';
+    const label = document.createElement('span');
+    label.style.cssText='min-width:52px;font-size:0.62rem';
+    label.textContent = n===1 ? 'Bild' : z===0 ? (orient==='h'?'Oben':'Links') : z===n-1 ? (orient==='h'?'Unten':'Rechts') : `Mitte ${z}`;
+    const sel = document.createElement('select');
+    sel.style.cssText='flex:1;font-family:inherit;font-size:0.68rem;padding:2px 4px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);color:var(--text)';
+    EFFECT_LIST.forEach(e => {
+      const opt = document.createElement('option');
+      opt.value=e; opt.textContent=EFFECT_LABELS[e]||e;
+      if(slicerZoneEffects[z]===e) opt.selected=true;
+      sel.appendChild(opt);
+    });
+    sel.addEventListener('change', () => { slicerZoneEffects[z]=sel.value; if(originalImage) applyEffect(); });
+    row.appendChild(label); row.appendChild(sel);
+    c.appendChild(row);
+  }
+}
+
+function slicerUpdateOverlay() {
+  const ov = document.getElementById('slicerOverlay');
+  if (currentEffect !== 'slicer') { ov.style.display='none'; return; }
+  ov.style.display = 'block';
+  // Clear everything except the event listener wrappers
+  Array.from(ov.children).forEach(c => c.remove());
+
+  const orient = document.getElementById('sl-orient') ? document.getElementById('sl-orient').value : 'h';
+
+  slicerLines.forEach((line, i) => {
+    const lineEl = document.createElement('div');
+    const handleEl = document.createElement('div');
+    const pct = (line.pos * 100).toFixed(2) + '%';
+    if (orient === 'h') {
+      lineEl.className='sl-line sl-line-h'; lineEl.style.top=pct;
+      handleEl.className='sl-handle sl-handle-h'; handleEl.style.top=pct;
+    } else {
+      lineEl.className='sl-line sl-line-v'; lineEl.style.left=pct;
+      handleEl.className='sl-handle sl-handle-v'; handleEl.style.left=pct;
+    }
+
+    handleEl.addEventListener('pointerdown', e => {
+      e.preventDefault(); e.stopPropagation();
+      slicerDragging = i;
+      handleEl.classList.add('dragging');
+      handleEl.setPointerCapture(e.pointerId);
+
+      const onMove = e2 => {
+        const r = ov.getBoundingClientRect();
+        let pos;
+        if (orient === 'h') pos = Math.max(0.02, Math.min(0.98, (e2.clientY - r.top) / r.height));
+        else pos = Math.max(0.02, Math.min(0.98, (e2.clientX - r.left) / r.width));
+        slicerLines[i].pos = pos;
+        // Update handle and line position live without full re-render
+        const newPct = (pos*100).toFixed(2)+'%';
+        if (orient==='h') { handleEl.style.top=newPct; lineEl.style.top=newPct; }
+        else { handleEl.style.left=newPct; lineEl.style.left=newPct; }
+        if (originalImage) applyEffect();
+      };
+      const onUp = () => {
+        slicerDragging = null;
+        handleEl.classList.remove('dragging');
+        slicerLines.sort((a,b)=>a.pos-b.pos);
+        slicerUpdateOverlay();
+        slicerBuildZoneControls();
+        handleEl.removeEventListener('pointermove', onMove);
+        handleEl.removeEventListener('pointerup', onUp);
+      };
+      handleEl.addEventListener('pointermove', onMove);
+      handleEl.addEventListener('pointerup', onUp);
+    });
+
+    ov.appendChild(lineEl);
+    ov.appendChild(handleEl);
+  });
+
+  slicerBuildZoneControls();
+}
+
+function applySlicer() {
+  if (!originalImage) return;
+  const orient = document.getElementById('sl-orient').value;
+  const W = canvas.width, H = canvas.height;
+
+  // Sort lines
+  const lines = [...slicerLines].sort((a,b)=>a.pos-b.pos);
+  // Build zone boundaries
+  const bounds = [0, ...lines.map(l=>l.pos), 1];
+  const n = bounds.length - 1;
+
+  // Ensure zone effects array has right length
+  while (slicerZoneEffects.length < n) slicerZoneEffects.push('original');
+
+  // Compose into a SEPARATE accumulator canvas. The draw-only effects
+  // (ascii/riso/pixelate/halftone) repaint the WHOLE main canvas as scratch,
+  // so if we composited straight onto the main canvas they would wipe the
+  // zones rendered before them. Building the result off-screen keeps every
+  // zone confined to its own slice, so each zone shows the effect selected
+  // for it.
+  const result = document.createElement('canvas'); result.width=W; result.height=H;
+  const rctx = result.getContext('2d');
+
+  for (let z=0; z<n; z++) {
+    const from = bounds[z], to = bounds[z+1];
+    const effect = slicerZoneEffects[z] || 'original';
+
+    // Render zone effect into offscreen
+    const off = document.createElement('canvas'); off.width=W; off.height=H;
+    const offCtx = off.getContext('2d'); offCtx.drawImage(originalImage,0,0);
+
+    if (effect !== 'original') {
+      if (['ascii','risograph','pixelate','halftone','flash','neon','micro','lowpoly'].includes(effect)) {
+        // These functions draw straight to the global main canvas, so use it
+        // as scratch and copy the full result into this zone's buffer.
+        const savedEffect = currentEffect; currentEffect = effect;
+        canvas.width=W; canvas.height=H; ctx.drawImage(originalImage,0,0);
+        if (effect==='ascii') applyASCII();
+        else if (effect==='risograph') applyRisograph();
+        else if (effect==='pixelate') applyPixelate();
+        else if (effect==='halftone') applyHalftone();
+        else if (effect==='flash') applyFlash();
+        else if (effect==='neon') applyNeon();
+        else if (effect==='micro') applyMicro();
+        else if (effect==='lowpoly') applyLowpoly();
+        offCtx.clearRect(0,0,W,H); offCtx.drawImage(canvas,0,0);
+        currentEffect = savedEffect;
+      } else {
+        let imgData = offCtx.getImageData(0,0,W,H);
+        if (effect==='duotone') imgData=applyDuotone(imgData);
+        else if (effect==='dither') imgData=applyDither(imgData);
+        else if (effect==='glitch') imgData=applyGlitch(imgData);
+        else if (effect==='posterize') imgData=applyPosterize(imgData);
+        else if (effect==='solarize') imgData=applySolarize(imgData);
+        else if (effect==='threshold') imgData=applyThreshold(imgData);
+        else if (effect==='blueprint') imgData=applyBlueprint(imgData);
+        else if (effect==='gradmap') imgData=applyGradientMap(imgData);
+        offCtx.putImageData(imgData,0,0);
+      }
+    }
+
+    // Draw only this zone's slice from the offscreen buffer into the accumulator
+    if (orient==='h') {
+      const y1=Math.round(from*H), y2=Math.round(to*H);
+      rctx.drawImage(off, 0,y1, W,y2-y1, 0,y1, W,y2-y1);
+    } else {
+      const x1=Math.round(from*W), x2=Math.round(to*W);
+      rctx.drawImage(off, x1,0, x2-x1,H, x1,0, x2-x1,H);
+    }
+  }
+
+  // Blit the finished composite back onto the main canvas
+  canvas.width=W; canvas.height=H;
+  ctx.clearRect(0,0,W,H);
+  ctx.drawImage(result,0,0);
+}
+
+document.getElementById('sl-add-line').addEventListener('click', () => {
+  if (slicerLines.length >= 2) return;
+  const pos = slicerLines.length === 0 ? 0.5 : slicerLines[0].pos < 0.5 ? 0.75 : 0.25;
+  slicerLines.push({pos});
+  slicerLines.sort((a,b)=>a.pos-b.pos);
+  while (slicerZoneEffects.length < slicerLines.length+1) slicerZoneEffects.push('original');
+  slicerUpdateOverlay();
+  if (originalImage) applyEffect();
+});
+document.getElementById('sl-clear-lines').addEventListener('click', () => {
+  slicerLines=[]; slicerZoneEffects=['duotone'];
+  slicerUpdateOverlay(); slicerBuildZoneControls();
+  if (originalImage) applyEffect();
+});
+document.getElementById('sl-orient').addEventListener('change', () => {
+  slicerLines=[]; slicerZoneEffects=['duotone'];
+  slicerUpdateOverlay(); slicerBuildZoneControls();
+  if (originalImage) applyEffect();
+});
+
+// ── Effect-Blend ───────────────────────────────────────
+let blendCenterX = 0.5, blendCenterY = 0.5;
+
+function applyEffectBlend() {
+  const effectName = document.getElementById('bl-effect').value;
+  const shape = document.getElementById('bl-shape').value;
+  const radius = parseInt(document.getElementById('bl-radius').value) / 100;
+  const soft = Math.max(0.01, parseInt(document.getElementById('bl-soft').value) / 100);
+  const invert = document.getElementById('bl-invert').value === '1';
+  const W = canvas.width, H = canvas.height;
+
+  const orig = document.createElement('canvas'); orig.width=W; orig.height=H;
+  orig.getContext('2d').drawImage(originalImage,0,0);
+
+  const effCanvas = document.createElement('canvas'); effCanvas.width=W; effCanvas.height=H;
+  const effCtx = effCanvas.getContext('2d');
+  effCtx.drawImage(originalImage,0,0);
+
+  if (['ascii','risograph','pixelate','halftone','flash','neon','micro','lowpoly'].includes(effectName)) {
+    const saved = currentEffect; currentEffect = effectName;
+    applyEffect(); effCtx.drawImage(canvas,0,0);
+    ctx.drawImage(originalImage,0,0); currentEffect = saved;
+  } else {
+    let imgData = effCtx.getImageData(0,0,W,H);
+    if (effectName==='duotone') imgData=applyDuotone(imgData);
+    else if (effectName==='dither') imgData=applyDither(imgData);
+    else if (effectName==='glitch') imgData=applyGlitch(imgData);
+    else if (effectName==='posterize') imgData=applyPosterize(imgData);
+    else if (effectName==='solarize') imgData=applySolarize(imgData);
+    else if (effectName==='threshold') imgData=applyThreshold(imgData);
+    else if (effectName==='blueprint') imgData=applyBlueprint(imgData);
+    else if (effectName==='gradmap') imgData=applyGradientMap(imgData);
+    effCtx.putImageData(imgData,0,0);
+  }
+
+  const origData = orig.getContext('2d').getImageData(0,0,W,H).data;
+  const effData = effCtx.getImageData(0,0,W,H).data;
+  const out = ctx.createImageData(W,H);
+  const aspect = W/H;
+
+  for (let y=0; y<H; y++) {
+    for (let x=0; x<W; x++) {
+      const nx=x/W, ny=y/H;
+      let dist;
+      if (shape==='radial') { const dx=(nx-blendCenterX)*aspect, dy=ny-blendCenterY; dist=Math.sqrt(dx*dx+dy*dy)/(radius*aspect); }
+      else if (shape==='horizontal') dist=Math.abs(ny-blendCenterY)/radius;
+      else dist=Math.abs(nx-blendCenterX)/radius;
+      let t = Math.min(1,Math.max(0,(dist-1+soft)/soft));
+      if (invert) t=1-t;
+      const i=(y*W+x)*4;
+      out.data[i]  =Math.round(effData[i]  *(1-t)+origData[i]  *t);
+      out.data[i+1]=Math.round(effData[i+1]*(1-t)+origData[i+1]*t);
+      out.data[i+2]=Math.round(effData[i+2]*(1-t)+origData[i+2]*t);
+      out.data[i+3]=255;
+    }
+  }
+  ctx.putImageData(out,0,0);
+}
+
+canvas.addEventListener('click', e => {
+  if (brushActive) return;
+  if (currentEffect !== 'blend') return;
+  const r = canvas.getBoundingClientRect();
+  blendCenterX = (e.clientX-r.left)/r.width;
+  blendCenterY = (e.clientY-r.top)/r.height;
+  document.getElementById('bl-center-display').textContent =
+    `Zentrum: ${Math.round(blendCenterX*100)}% / ${Math.round(blendCenterY*100)}%`;
+  applyEffect();
+});
+
+// ── Border ─────────────────────────────────────────────
+function addBorder(bw, color) {
+  if (bw <= 0) return;
+  ctx.save();
+  // Zustand von vorherigen Effekten sicher zuruecksetzen (sonst wuerde der
+  // Rahmen z.B. eine hinterlassene Compositing-Operation oder ein Filter erben).
+  ctx.globalCompositeOperation = 'source-over';
+  ctx.filter = 'none';
+  ctx.globalAlpha = 1;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = bw;
+  // Vollstaendig innen liegender Rahmen — die gesamte Dicke bleibt sichtbar.
+  ctx.strokeRect(bw/2, bw/2, canvas.width - bw, canvas.height - bw);
+  ctx.restore();
+}
+
+// ── Main apply ─────────────────────────────────────────
+function applyEffect(){
+  if(!originalImage) return;
+  canvas.width=originalImage.width; canvas.height=originalImage.height;
+
+  if (currentEffect==='slicer') { applySlicer(); }
+  else if (currentEffect==='blend') { applyEffectBlend(); }
+  else if (currentEffect==='none') { ctx.drawImage(originalImage,0,0); }
+  else {
+    const drawOnly=['ascii','risograph','pixelate','halftone','flash','neon','micro','lowpoly'];
+    if(drawOnly.includes(currentEffect)){
+      ctx.drawImage(originalImage,0,0);
+      if(currentEffect==='ascii') { applyASCII(); }
+      else if(currentEffect==='risograph') applyRisograph();
+      else if(currentEffect==='pixelate') applyPixelate();
+      else if(currentEffect==='halftone') applyHalftone();
+      else if(currentEffect==='flash') applyFlash();
+      else if(currentEffect==='neon') applyNeon();
+      else if(currentEffect==='micro') applyMicro();
+      else if(currentEffect==='lowpoly') applyLowpoly();
+    } else {
+      ctx.drawImage(originalImage,0,0);
+      let imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+      if(currentEffect==='duotone') imgData=applyDuotone(imgData);
+      else if(currentEffect==='dither') imgData=applyDither(imgData);
+      else if(currentEffect==='glitch') imgData=applyGlitch(imgData);
+      else if(currentEffect==='posterize') imgData=applyPosterize(imgData);
+      else if(currentEffect==='solarize') imgData=applySolarize(imgData);
+      else if(currentEffect==='threshold') imgData=applyThreshold(imgData);
+      else if(currentEffect==='blueprint') imgData=applyBlueprint(imgData);
+      else if(currentEffect==='gradmap') imgData=applyGradientMap(imgData);
+      ctx.putImageData(imgData,0,0);
+    }
+  }
+  const bw=parseInt(document.getElementById('border-width').value);
+  addBorder(bw, document.getElementById('border-color').value);
+}
+
+// ── Original wiederherstellen (voller Reset auf das geladene Bild) ──
+function restoreOriginal(){
+  if(!pristineImage) return;
+  if(cropState!=='off') exitCrop();
+  originalImage = pristineImage; sourceImage = pristineImage;
+  fillActive = false;
+  overlayId = null; overlayImg = null; overlayMask = null; effectCache = null; brushActive = false;
+  const bw=document.getElementById('border-width'); if(bw){ bw.value=0; const v=document.getElementById('border-width-val'); if(v) v.textContent='0'; }
+  setFormatMode('none'); setDecoMode('none');
+  highlightOverlay(); updateFillUi(); updateBrushUi();
+  activateEffect('none');
+}
+document.getElementById('restoreBtn')?.addEventListener('click', restoreOriginal);
+
+// ── 16:9-Format: Umschalter (Aus / Zuschnitt / Unschärfe-Rand) ──
+function setFormatMode(m){
+  formatMode = m;
+  document.querySelectorAll('#format-mode .seg-btn').forEach(b=>b.classList.toggle('active', b.dataset.fmt===m));
+  const cropP=document.getElementById('fmt-crop'), blurP=document.getElementById('fmt-blur');
+  if(cropP) cropP.hidden = m!=='crop';
+  if(blurP) blurP.hidden = m!=='blur';
+}
+document.querySelectorAll('#format-mode .seg-btn').forEach(b=>b.addEventListener('click', ()=>{
+  if(cropState!=='off' && b.dataset.fmt!=='crop') exitCrop();
+  setFormatMode(b.dataset.fmt);
+}));
+
+// ── Overlay/Rahmen: Umschalter (Aus / Overlay / Rahmen), exklusiv ──
+function setDecoMode(m){
+  decoMode = m;
+  document.querySelectorAll('#deco-mode .seg-btn').forEach(b=>b.classList.toggle('active', b.dataset.deco===m));
+  const ovP=document.getElementById('deco-overlay'), boP=document.getElementById('deco-border');
+  if(ovP) ovP.hidden = m!=='overlay';
+  if(boP) boP.hidden = m!=='border';
+  if(m!=='overlay') brushActive=false;
+  updateBrushUi();
+}
+document.querySelectorAll('#deco-mode .seg-btn').forEach(b=>b.addEventListener('click', ()=>{
+  setDecoMode(b.dataset.deco);
+  if(originalImage) applyEffect();
+}));
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const a=document.createElement('a'); a.download='aufmacher.png'; a.href=canvas.toDataURL('image/png'); a.click();
+});
+
+// ── Overlay (Rubrik) + Pop-Out-Pinsel + Unschärfe-Hintergrund ──────────
+const OVERLAY_DATA = {};
+const OVERLAY_LIST = [
+  {id:'faq',name:'FAQ'},
+  {id:'wtf',name:'WTF'},
+  {id:'kommentar',name:'Kommentar'},
+  {id:'interview',name:'Interview'},
+  {id:'analyse',name:'Analyse'},
+];
+function loadImg(src){ return new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=()=>rej(new Error('img')); i.src=src; }); }
+
+function buildOverlayGrid(){
+  const g=document.getElementById('ov-grid'); if(!g) return;
+  let html='<button class="ov-tile" data-ov="__none__" title="Kein Overlay">Ohne</button>';
+  for(const o of OVERLAY_LIST){
+    const src=OVERLAY_DATA[o.id]||'';
+    html+=`<button class="ov-tile" data-ov="${o.id}" title="${o.name}"><img src="${src}" alt="${o.name}"><span>${o.name}</span></button>`;
+  }
+  g.innerHTML=html;
+  g.querySelectorAll('.ov-tile').forEach(b=>b.addEventListener('click',()=>selectOverlay(b.dataset.ov)));
+  highlightOverlay();
+}
+function highlightOverlay(){
+  document.querySelectorAll('#ov-grid .ov-tile').forEach(t=>t.classList.toggle('active', t.dataset.ov===(overlayId||'__none__')));
+}
+async function selectOverlay(id){
+  overlayId = id==='__none__' ? null : id;
+  highlightOverlay();
+  if(overlayId){ try{ overlayImg=await loadImg(OVERLAY_DATA[overlayId]); }catch(e){ overlayImg=null; } }
+  else { overlayImg=null; }
+  resetOverlayMask();
+  updateBrushUi();
+  if(originalImage) applyEffect();
+}
+function resetOverlayMask(){
+  if(!originalImage){ overlayMask=null; return; }
+  const W=canvas.width,H=canvas.height;
+  overlayMask=document.createElement('canvas'); overlayMask.width=W; overlayMask.height=H;
+  const m=overlayMask.getContext('2d'); m.fillStyle='#fff'; m.fillRect(0,0,W,H);
+}
+function ensureOverlayMaskSize(){
+  if(!originalImage) return;
+  if(!overlayMask || overlayMask.width!==canvas.width || overlayMask.height!==canvas.height) resetOverlayMask();
+}
+let _ovTmp=null;
+function drawOverlayLayer(){
+  if(!overlayImg || !overlayMask) return;
+  const W=canvas.width,H=canvas.height;
+  if(!_ovTmp || _ovTmp.width!==W || _ovTmp.height!==H){ _ovTmp=document.createElement('canvas'); _ovTmp.width=W; _ovTmp.height=H; }
+  const t=_ovTmp.getContext('2d');
+  t.globalCompositeOperation='source-over'; t.clearRect(0,0,W,H);
+  t.drawImage(overlayImg,0,0,W,H);
+  t.globalCompositeOperation='destination-in'; t.drawImage(overlayMask,0,0);
+  t.globalCompositeOperation='source-over';
+  ctx.drawImage(_ovTmp,0,0);
+}
+function cacheEffectResult(){
+  const W=canvas.width,H=canvas.height;
+  if(!effectCache || effectCache.width!==W || effectCache.height!==H){ effectCache=document.createElement('canvas'); effectCache.width=W; effectCache.height=H; }
+  const c=effectCache.getContext('2d'); c.globalCompositeOperation='source-over'; c.clearRect(0,0,W,H); c.drawImage(canvas,0,0);
+}
+function recompositeOverlay(){
+  if(!effectCache){ if(originalImage) applyEffect(); return; }
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H); ctx.drawImage(effectCache,0,0);
+  if (decoMode==='overlay') drawOverlayLayer();
+  if (decoMode==='border') {
+    const bw=parseInt(document.getElementById('border-width').value);
+    addBorder(bw, document.getElementById('border-color').value);
+  }
+}
+
+// Pop-Out-Pinsel (bearbeitet die Overlay-Maske)
+function brushCoords(e){
+  const r=canvas.getBoundingClientRect();
+  return { x:(e.clientX-r.left)*(canvas.width/r.width), y:(e.clientY-r.top)*(canvas.height/r.height) };
+}
+function paintOverlayMask(cx,cy){
+  if(!overlayMask) return;
+  const m=overlayMask.getContext('2d');
+  const r=ovBrushSize;
+  const innerStop=Math.min(0.95, ovBrushHardness/100);
+  const erase=brushMode==='erase';
+  const grad=m.createRadialGradient(cx,cy,0,cx,cy,r);
+  grad.addColorStop(0, erase?'rgba(0,0,0,1)':'rgba(255,255,255,1)');
+  grad.addColorStop(innerStop, erase?'rgba(0,0,0,0.6)':'rgba(255,255,255,0.6)');
+  grad.addColorStop(1, erase?'rgba(0,0,0,0)':'rgba(255,255,255,0)');
+  m.globalCompositeOperation = erase ? 'destination-out' : 'source-over';
+  m.fillStyle=grad; m.beginPath(); m.arc(cx,cy,r,0,Math.PI*2); m.fill();
+  m.globalCompositeOperation='source-over';
+}
+// Kreisvorschau des Pop-Out-Pinsels (folgt dem Zeiger, zeigt die echte Größe)
+function positionBrushPreview(e){
+  const el=document.getElementById('brushPreview'); if(!el) return;
+  const r=canvas.getBoundingClientRect(); if(r.width<=0) return;
+  const scale=r.width/canvas.width;
+  const d=ovBrushSize*2*scale;
+  el.style.width=d+'px'; el.style.height=d+'px';
+  el.style.left=(e.clientX-r.left)+'px';
+  el.style.top=(e.clientY-r.top)+'px';
+}
+function updateBrushPreviewSize(){
+  const el=document.getElementById('brushPreview'); if(!el || el.style.display==='none') return;
+  const r=canvas.getBoundingClientRect(); if(r.width<=0) return;
+  const d=ovBrushSize*2*(r.width/canvas.width);
+  el.style.width=d+'px'; el.style.height=d+'px';
+}
+function showBrushPreview(e){
+  if(!brushActive || !overlayImg) return;
+  const el=document.getElementById('brushPreview'); if(!el) return;
+  positionBrushPreview(e); el.style.display='block';
+}
+function hideBrushPreview(){ const el=document.getElementById('brushPreview'); if(el) el.style.display='none'; }
+
+function bindOverlayBrush(){
+  let painting=false, scheduled=false;
+  const stroke=(x,y)=>{ paintOverlayMask(x,y); if(!scheduled){ scheduled=true; requestAnimationFrame(()=>{ scheduled=false; recompositeOverlay(); }); } };
+  canvas.addEventListener('pointerdown', e=>{
+    if(!brushActive || !overlayImg) return;
+    e.preventDefault(); try{ canvas.setPointerCapture(e.pointerId); }catch(_){} painting=true;
+    const {x,y}=brushCoords(e); stroke(x,y);
+  });
+  canvas.addEventListener('pointermove', e=>{
+    if(brushActive && overlayImg) showBrushPreview(e); // Vorschau folgt dem Zeiger
+    if(!painting) return;
+    const {x,y}=brushCoords(e); stroke(x,y);
+  });
+  canvas.addEventListener('pointerenter', e=>{ if(brushActive && overlayImg) showBrushPreview(e); });
+  canvas.addEventListener('pointerleave', hideBrushPreview);
+  canvas.addEventListener('pointerup', ()=>{ painting=false; });
+  canvas.addEventListener('pointercancel', ()=>{ painting=false; });
+}
+function overlayBrushCursor(){
+  if(!brushActive || !overlayImg){ canvas.style.cursor=''; hideBrushPreview(); return; }
+  canvas.style.cursor='crosshair'; // Größe zeigt der Vorschaukreis
+}
+function updateBrushUi(){
+  const canBrush=!!overlayImg;
+  const grp=document.getElementById('ov-brush-controls');
+  if(grp) grp.classList.toggle('disabled', !canBrush);
+  if(!canBrush) brushActive=false;
+  const tgl=document.getElementById('ov-brush-toggle');
+  if(tgl){ tgl.disabled=!canBrush; tgl.classList.toggle('active', brushActive); tgl.textContent=brushActive?'Pinsel aktiv ✓':'Pop-Out-Pinsel'; }
+  overlayBrushCursor();
+}
+
+// Unschärfe-Hintergrund (Blur-Fill) für Hochkant / Nicht-16:9
+function drawImageCoverZoom(c,img,W,H,zoom){
+  const cR=W/H, mR=img.width/img.height; let dw,dh;
+  if(mR>cR){ dh=H*zoom; dw=dh*mR; } else { dw=W*zoom; dh=dw/mR; }
+  c.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+}
+function drawImageContain2(c,img,W,H){
+  const cR=W/H, mR=img.width/img.height; let dw,dh;
+  if(mR>cR){ dw=W; dh=dw/mR; } else { dh=H; dw=dh*mR; }
+  c.drawImage(img,(W-dw)/2,(H-dh)/2,dw,dh);
+}
+function buildBlurFillCanvas(img, blur, bg){
+  const AR=16/9, mR=img.width/img.height; let W,H;
+  if(mR<AR){ H=img.height; W=Math.round(H*AR); } else { W=img.width; H=Math.round(W/AR); }
+  const c=document.createElement('canvas'); c.width=W; c.height=H;
+  const x=c.getContext('2d'); x.imageSmoothingQuality='high';
+  // Deckende Hintergrundfarbe zuerst — so bleiben die Ränder auch bei starker
+  // Unschärfe (weiche, teiltransparente Blur-Kante) blickdicht bis zum Rand.
+  if(bg){ x.fillStyle=bg; x.fillRect(0,0,W,H); }
+  const b=Math.max(0,Math.min(100, blur|0));
+  if(b>0) x.filter=`blur(${b}px)`;
+  drawImageCoverZoom(x,img,W,H,1.12);
+  x.filter='none';
+  drawImageContain2(x,img,W,H);
+  return c;
+}
+let _fillToken=0;
+async function applyBlurFill(){
+  if(!sourceImage) return;
+  fillActive=true; const my=++_fillToken;
+  const bg=document.getElementById('fill-bg')?.value || '#101418';
+  const url=buildBlurFillCanvas(sourceImage, fillBlur, bg).toDataURL('image/png');
+  let im; try{ im=await loadImg(url); }catch(e){ return; }
+  if(my!==_fillToken) return;
+  originalImage=im; overlayMask=null; effectCache=null;
+  updateFillUi(); applyEffect();
+}
+function revertFill(){
+  if(!sourceImage) return;
+  fillActive=false; originalImage=sourceImage; overlayMask=null; effectCache=null;
+  updateFillUi(); if(originalImage) applyEffect();
+}
+function updateFillUi(){
+  const btn=document.getElementById('fill-apply'); if(btn) btn.classList.toggle('active', fillActive);
+  const rev=document.getElementById('fill-revert'); if(rev) rev.disabled=!fillActive;
+}
+
+// Init Overlay / Brush / Fill
+buildOverlayGrid();
+bindOverlayBrush();
+(function initOverlayFillUi(){
+  document.getElementById('ov-brush-toggle')?.addEventListener('click', ()=>{ if(!overlayImg) return; brushActive=!brushActive; updateBrushUi(); });
+  document.querySelectorAll('#ov-brush-mode .seg-btn').forEach(b=>b.addEventListener('click', ()=>{
+    document.querySelectorAll('#ov-brush-mode .seg-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active'); brushMode=b.dataset.bmode;
+  }));
+  const bs=document.getElementById('ov-brush-size');
+  bs?.addEventListener('input', ()=>{ ovBrushSize=+bs.value; const d=document.getElementById('ov-brush-size-disp'); if(d) d.innerHTML=ovBrushSize+'&nbsp;px'; overlayBrushCursor(); updateBrushPreviewSize(); });
+  const bh=document.getElementById('ov-brush-hard');
+  bh?.addEventListener('input', ()=>{ ovBrushHardness=+bh.value; const d=document.getElementById('ov-brush-hard-disp'); if(d) d.textContent=ovBrushHardness; });
+  document.getElementById('ov-brush-reset')?.addEventListener('click', ()=>{ resetOverlayMask(); recompositeOverlay(); });
+  const fb=document.getElementById('fill-blur');
+  fb?.addEventListener('input', ()=>{ fillBlur=+fb.value; const d=document.getElementById('fill-blur-disp'); if(d) d.innerHTML=fillBlur+'&nbsp;px'; if(fillActive) applyBlurFill(); });
+  document.getElementById('fill-bg')?.addEventListener('change', ()=>{ if(fillActive) applyBlurFill(); });
+  document.getElementById('fill-apply')?.addEventListener('click', ()=>{ if(originalImage) applyBlurFill(); });
+  document.getElementById('fill-revert')?.addEventListener('click', revertFill);
+  window.addEventListener('resize', overlayBrushCursor);
+  updateBrushUi();
+})();
+
+// (Eigene Editor-/Bildquellen-Links entfernt)
+
+
+// ── ASCII weight ───────────────────────────────────────
+function updateAsciiWeightVisibility(){
+  const mode=document.getElementById('asc-mode').value;
+  document.getElementById('asc-weight-row').style.display=mode==='classic'?'flex':'none';
+}
+document.getElementById('asc-mode').addEventListener('change', ()=>{ updateAsciiWeightVisibility(); if(originalImage) applyEffect(); });
+updateAsciiWeightVisibility();
+
+// Init slicer zone controls
+slicerBuildZoneControls();
+// ── Interaktive Tour (Spotlight) ───────────────────────────────
+const TOUR_KEY = 'aufmacher_tour_seen_v1';
+const TOUR_STEPS = [
+  { sel:null, title:'Schnell zum Aufmacher', text:'Willkommen! In wenigen Schritten wird aus einem Foto ein Aufmacher – ganz ohne KI-Einheitsbrei. Der Ablauf folgt der Leiste von oben nach unten.' },
+  { sel:'#bild-section', title:'1 · Bild laden', text:'Zieh ein Bild in die Fläche oder klick sie an. „Original wiederherstellen“ setzt jederzeit auf das ungefilterte Ausgangsbild zurück.' },
+  { sel:'#format-section', title:'2 · Format (16:9)', text:'Zuerst ins Format bringen: entweder einen 16:9-Ausschnitt aufziehen oder – für Hochkant – einen unscharfen Hintergrundrand mit wählbarer Füllfarbe erzeugen.' },
+  { sel:'#fx-tabs', title:'3 · Effekt wählen', text:'Duotone, Halftone, Dither, Glitch, Blueprint, Neon, Low-Poly und mehr. „Ohne“ zeigt das Bild unbearbeitet.' },
+  { sel:'#effect-controls', title:'Feinjustieren & Presets', text:'Regler und Farben passen den Effekt live an; eigene Einstellungen lassen sich als Preset speichern.' },
+  { sel:'#meta-tabs', title:'Slicer & Effekt-Verlauf', text:'Der Slicer teilt das Bild in Zonen mit je eigenem Effekt. Der Effekt-Verlauf blendet einen Effekt weich ins Original.' },
+  { sel:'#deco-section', title:'4 · Rahmen', text:'Optional eine farbige Außenkante in beliebiger Dicke um das Bild.' },
+  { sel:'#export-actions', title:'5 · Speichern', text:'Fertig? Als PNG herunterladen. Diese Tour findest du jederzeit oben rechts unter „? Tour“ wieder.' },
+];
+let tourIdx = 0;
+let tourEls = null;
+
+function buildTourDom(){
+  if(tourEls) return tourEls;
+  const backdrop=document.createElement('div'); backdrop.id='tourBackdrop';
+  const spot=document.createElement('div'); spot.id='tourSpot';
+  const card=document.createElement('div'); card.id='tourCard';
+  card.innerHTML=`<div class="tour-head"><button id="tourSkip" type="button">Überspringen ✕</button></div>
+    <h3></h3><p></p>
+    <div class="tour-foot"><div class="tour-dots"></div>
+    <div class="tour-btns"><button id="tourPrev" type="button">← Zurück</button><button id="tourNext" type="button" class="primary">Weiter →</button></div></div>`;
+  document.body.append(backdrop, spot, card);
+  card.querySelector('#tourSkip').addEventListener('click', endTour);
+  card.querySelector('#tourPrev').addEventListener('click', ()=>gotoTourStep(tourIdx-1));
+  card.querySelector('#tourNext').addEventListener('click', ()=>{ if(tourIdx>=TOUR_STEPS.length-1) endTour(); else gotoTourStep(tourIdx+1); });
+  backdrop.addEventListener('click', (e)=>{ e.stopPropagation(); }); // Klicks aufs UI abfangen
+  window.addEventListener('resize', positionTour);
+  document.addEventListener('keydown', (e)=>{
+    if(!tourEls || tourEls.card.style.display==='none') return;
+    if(e.key==='Escape') endTour();
+    else if(e.key==='ArrowRight'){ if(tourIdx>=TOUR_STEPS.length-1) endTour(); else gotoTourStep(tourIdx+1); }
+    else if(e.key==='ArrowLeft') gotoTourStep(tourIdx-1);
+  });
+  tourEls={backdrop,spot,card};
+  return tourEls;
+}
+function startTour(){
+  buildTourDom();
+  tourEls.backdrop.style.display='block';
+  tourEls.spot.style.display='block';
+  tourEls.card.style.display='block';
+  gotoTourStep(0);
+}
+function endTour(){
+  if(!tourEls) return;
+  tourEls.backdrop.style.display='none';
+  tourEls.spot.style.display='none';
+  tourEls.card.style.display='none';
+  document.querySelector('.sidebar')?.scrollTo(0,0);
+  try{ localStorage.setItem(TOUR_KEY,'1'); }catch(e){}
+}
+function gotoTourStep(i){
+  tourIdx=Math.max(0,Math.min(TOUR_STEPS.length-1,i));
+  const step=TOUR_STEPS[tourIdx];
+  const card=tourEls.card;
+  card.querySelector('h3').textContent=step.title;
+  card.querySelector('p').textContent=step.text;
+  const dots=card.querySelector('.tour-dots'); dots.innerHTML='';
+  TOUR_STEPS.forEach((_,k)=>{ const d=document.createElement('div'); d.className='tour-dot'+(k===tourIdx?' on':''); dots.appendChild(d); });
+  card.querySelector('#tourPrev').disabled = tourIdx===0;
+  card.querySelector('#tourNext').textContent = tourIdx===TOUR_STEPS.length-1 ? 'Fertig ✓' : 'Weiter →';
+  const el = step.sel ? document.querySelector(step.sel) : null;
+  if(el) el.scrollIntoView({block:'center', inline:'nearest'});
+  requestAnimationFrame(positionTour);
+}
+function positionTour(){
+  if(!tourEls || tourEls.card.style.display==='none') return;
+  const step=TOUR_STEPS[tourIdx];
+  const spot=tourEls.spot, card=tourEls.card;
+  const el = step.sel ? document.querySelector(step.sel) : null;
+  const vw=window.innerWidth, vh=window.innerHeight, pad=8, gap=14;
+  const cw=card.offsetWidth||300, ch=card.offsetHeight||160;
+  if(!el){
+    spot.classList.add('no-target');
+    card.style.left=Math.round((vw-cw)/2)+'px';
+    card.style.top=Math.round((vh-ch)/2)+'px';
+    return;
+  }
+  spot.classList.remove('no-target');
+  const r=el.getBoundingClientRect();
+  const x=Math.max(0,r.left-pad), y=Math.max(0,r.top-pad);
+  const w=Math.min(vw,r.right+pad)-x, h=Math.min(vh,r.bottom+pad)-y;
+  spot.style.left=x+'px'; spot.style.top=y+'px'; spot.style.width=w+'px'; spot.style.height=h+'px';
+  let cx, cy;
+  if(r.right+gap+cw <= vw){ cx=r.right+gap; cy=r.top; }
+  else if(r.bottom+gap+ch <= vh){ cx=r.left; cy=r.bottom+gap; }
+  else if(r.top-gap-ch >= 0){ cx=r.left; cy=r.top-gap-ch; }
+  else { cx=vw-cw-gap; cy=gap; }
+  cx=Math.max(gap,Math.min(vw-cw-gap,cx));
+  cy=Math.max(gap,Math.min(vh-ch-gap,cy));
+  card.style.left=Math.round(cx)+'px'; card.style.top=Math.round(cy)+'px';
+}
+document.getElementById('helpBtn').addEventListener('click', startTour);
+
+// Auto-Start bei erstem Besuch
+if (!localStorage.getItem(TOUR_KEY)) setTimeout(startTour, 400);
+
+</script>
+
+
+</body></html>
